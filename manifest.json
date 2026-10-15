@@ -1,0 +1,139 @@
+{
+  "manifest_version": 3,
+  "name": "T-Helper",
+  "version": "2.3.1",
+  "description": "Помощник для сотрудников первой линии.\n\n@a.s.klenin",
+  "permissions": [
+    "scripting",
+    "storage",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "T-Helper"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/content.js"
+      ],
+      "css": [
+        "src/styles/fonts.css",
+        "src/styles/menu.css"
+      ],
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/schedule.js"
+      ],
+      "css": [
+        "src/styles/schedule.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/checklist.js"
+      ],
+      "css": [
+        "src/styles/checklist.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://homeagents.ru/*"
+      ],
+      "js": [
+        "src/content/timer.js"
+      ],
+      "css": [
+        "src/styles/timer.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/blur.js"
+      ],
+      "css": [
+        "src/styles/blur.css"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/update-notice.js"
+      ],
+      "css": [
+        "src/styles/update-notice.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content/notes.js"
+      ],
+      "css": [
+        "src/styles/notes-icons.css",
+        "src/styles/notes.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/icon16.png",
+        "icons/icon48.png",
+        "sounds/teamschat.mp3",
+        "sounds/vz-alert.mp3",
+        "sounds/update-notice.mp3",
+        "fonts/onest-cyrillic-ext.woff2",
+        "fonts/onest-cyrillic.woff2",
+        "fonts/onest-latin-ext.woff2",
+        "fonts/onest-latin.woff2",
+        "src/styles/blur.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

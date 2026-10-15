@@ -1,0 +1,473 @@
+/* ════════════════════════════════════════════
+   ДИЗАЙН-ТОКЕНЫ
+   Две темы: тёмная (база #0D0D0F) и белая.
+   Базовые значения = тёмная; белая переопределяет
+   только нужное. Полупрозрачные варианты пишутся
+   как rgba(var(--th-*-rgb), a) — меняется тройка.
+   ════════════════════════════════════════════ */
+:root {
+  /* Лестница глубины: основание почти чёрное, карточка ощутимо выше,
+     наведение ещё выше. Шаг между ступенями намеренно крупный — когда
+     основание и карточка стоят рядом, поверхность читается плоской
+     и сероватой, сколько ни подбирай оттенок. */
+  --th-bg:         #0D0D0F;
+  --th-card:       #17171A;
+  --th-card-hover: #212126;
+  --th-pop:        #212126;   /* тултип, тост */
+  --th-border:     rgba(255, 255, 255, 0.06);
+  --th-border-str: rgba(255, 255, 255, 0.11);
+  --th-track:      rgba(255, 255, 255, 0.16);
+
+  /* текст: не чистый белый — на тёмном он бликует и утомляет */
+  --th-text:       #EDEDEF;
+  --th-text-rgb:   237, 237, 239;
+
+  --th-accent:     #FFD600;
+  --th-accent-rgb: 255, 214, 0;
+  --th-knob:       #FFFFFF;
+  --th-shadow:     0 12px 36px rgba(0, 0, 0, 0.66);
+
+  /* жёлтые кнопки — одинаковые в обеих темах */
+  --th-switch-on:     linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%);
+  --th-fill-bg:       linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%);
+  --th-fill-bg-hover: linear-gradient(180deg, #FFE75C 0%, #FFDC28 100%);
+  --th-fill-border:   transparent;
+  --th-fill-fg:       #1B1C1D;
+
+  /* моторика: одна кривая на «приезд», одна на «уезд» — зеркальные,
+     чтобы обратимые переходы шли по тому же пути (принцип симметрии) */
+  --th-ease:     cubic-bezier(0.32, 0.72, 0, 1);
+  --th-ease-out: cubic-bezier(0.4, 0, 0.68, 0.28);
+  --th-spring:   cubic-bezier(0.34, 1.32, 0.64, 1);
+}
+
+:root[data-theme="white"] {
+  --th-bg:         #FFFFFF;
+  --th-card:       #FAFAFA;
+  --th-card-hover: #F3F3F4;
+  --th-pop:        #FFFFFF;
+  --th-border:     rgba(0, 0, 0, 0.08);
+  --th-border-str: rgba(0, 0, 0, 0.13);
+  --th-track:      rgba(0, 0, 0, 0.14);
+
+  --th-text:       #1B1C1D;
+  --th-text-rgb:   27, 28, 29;
+
+  /* Акцент разведён на два токена. --th-accent красит ТЕКСТ и иконки:
+     на светлом это чернила, потому что жёлтый по белому не читается.
+     --th-accent-rgb — подложка, и она всегда чистый #FFD600, поэтому
+     жёлтые плашки одинаковы в обеих темах. Раньше здесь стоял единый
+     приглушённый #B8860B, и подложки от него отдавали оливковым. */
+  --th-accent:     #1B1C1D;
+  --th-accent-rgb: 255, 214, 0;
+  --th-knob:       #FFFFFF;
+  --th-shadow:     0 10px 32px rgba(0, 0, 0, 0.13);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Стандартные scrollbar-width / scrollbar-color в современном Chrome
+   ОТКЛЮЧАЮТ оформление через ::-webkit-scrollbar. Раньше стояло и то и
+   другое, побеждал стандарт без цвета — и при раскрытии панели появлялась
+   системная полоса. Оставляем только стандартные свойства и красим их. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140, 140, 145, 0.45) transparent;
+}
+
+/* overflow обязателен и здесь: если у html он visible, браузер
+   ПРОБРАСЫВАЕТ overflow с body на область просмотра, body перестаёт быть
+   контейнером прокрутки, и документ всё равно растёт при раскрытии
+   панели — окно попапа пересчитывается, и мы снова видим рывок. */
+html {
+  /* шире на ширину зарезервированной полосы, чтобы содержимому осталось
+     ровно 280px — иначе названия модулей начинают переноситься */
+  width: 290px;
+  height: 600px;
+  overflow: hidden;
+  background: var(--th-bg);
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-gutter: stable;   /* место под полосу зарезервировано — ширина не прыгает */
+  font-family: 'Onest', system-ui, -apple-system, sans-serif;
+  background: var(--th-bg);
+  color: var(--th-text);
+  padding: 14px;
+  /* резкий скачок яркости при смене темы неприятен — уводим его в плавный */
+  transition: background 0.32s var(--th-ease), color 0.32s var(--th-ease);
+}
+
+/* ── Шапка ── */
+#pp-header {
+  display: flex; align-items: center; gap: 9px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--th-border);
+}
+#pp-logo { width: 26px; height: 26px; object-fit: contain; border-radius: 5px; }
+#pp-title {
+  font-size: 16px; font-weight: 600; color: var(--th-accent);
+  letter-spacing: -0.01em;            /* крупный текст просит отрицательный трекинг */
+  margin-right: auto;
+}
+body[data-theme="white"] #pp-title { color: var(--th-text); }
+
+/* ── Переключатель темы ──
+   Иконка показывает, куда переключишься: солнце в тёмной, луна в белой.
+   Обе лежат друг на друге и меняются поворотом со сменой масштаба. */
+#pp-theme-toggle {
+  position: relative;
+  width: 28px; height: 28px; flex-shrink: 0;
+  border: 1px solid var(--th-border);
+  border-radius: 9px;
+  background: var(--th-card);
+  color: var(--th-text);
+  cursor: pointer; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  transition: background 0.18s var(--th-ease), border-color 0.18s var(--th-ease),
+              transform 0.1s var(--th-ease);
+}
+#pp-theme-toggle:hover { background: var(--th-card-hover); border-color: var(--th-border-str); }
+/* отклик на нажатие, а не на отпускание */
+#pp-theme-toggle:active { transform: scale(0.92); transition-duration: 0.08s; }
+#pp-theme-toggle:focus-visible { outline: 2px solid #FFD000; outline-offset: 2px; }
+
+#pp-theme-toggle svg {
+  position: absolute;
+  width: 15px; height: 15px;
+  display: block;
+  transition: opacity 0.26s var(--th-ease), transform 0.34s var(--th-spring);
+}
+/* уходящая иконка проваливается и отворачивается, приходящая — наоборот */
+.pp-icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+.pp-icon-moon { opacity: 0; transform: rotate(-70deg) scale(0.5); }
+body[data-theme="white"] .pp-icon-sun  { opacity: 0; transform: rotate(70deg) scale(0.5); }
+body[data-theme="white"] .pp-icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+
+.pp-section-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: rgba(var(--th-text-rgb), 0.38);
+  margin: 14px 0 8px;
+}
+
+/* ── Карточка модуля ── */
+.pp-module {
+  position: relative;              /* якорь для всплывающего описания «?» */
+  background: var(--th-card);
+  border: 1px solid var(--th-border);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 8px;
+  transition: background 0.2s var(--th-ease), border-color 0.2s var(--th-ease);
+}
+.pp-module:hover { border-color: var(--th-border-str); }
+.pp-module-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+}
+.pp-module-info { flex: 1; min-width: 0; padding-right: 2px; }
+.pp-module-name {
+  font-size: 13px; font-weight: 600; color: var(--th-text);
+  white-space: nowrap; letter-spacing: -0.005em;
+}
+.pp-module-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.pp-module-launch { margin-top: 8px; }
+.pp-module-launch .pp-open-btn { display: block; width: 100%; text-align: center; }
+
+/* ── Кнопка «?» с описанием модуля ──
+   Описание живёт в data-tip и всплывает по наведению. Всплывашка
+   привязана к .pp-module, а не к самой кнопке: так она занимает всю
+   ширину карточки и длинный текст переносится, не вылезая за попап. */
+.pp-help {
+  background: none; border: none; cursor: help; padding: 0;
+  width: 20px; height: 20px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(var(--th-text-rgb), 0.34);
+  transition: background 0.16s var(--th-ease), color 0.16s var(--th-ease);
+}
+.pp-help::before {
+  content: "?";
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.3px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; line-height: 1;
+}
+.pp-help:hover { background: var(--th-card-hover); color: var(--th-text); }
+
+.pp-help::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 10px; right: 10px; top: 36px;
+  z-index: 30;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--th-pop);
+  border: 1px solid var(--th-border-str);
+  box-shadow: var(--th-shadow);
+  font-size: 11px; font-weight: 400; line-height: 1.5;
+  color: rgba(var(--th-text-rgb), 0.8);
+  text-align: left; white-space: normal;
+  opacity: 0; visibility: hidden;
+  /* всплывает от кнопки, а не из ниоткуда */
+  transform: translateY(-4px) scale(0.97);
+  transform-origin: top right;
+  transition: opacity 0.18s var(--th-ease), transform 0.24s var(--th-spring),
+              visibility 0s linear 0.18s;
+  pointer-events: none;
+}
+.pp-help:hover::after {
+  opacity: 1; visibility: visible;
+  transform: translateY(0) scale(1);
+  transition-delay: 0s;
+}
+
+/* ── Шестерёнка ── */
+.pp-gear {
+  background: none; border: none; cursor: pointer;
+  color: rgba(var(--th-text-rgb), 0.34); font-size: 13px;
+  width: 24px; height: 24px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.16s var(--th-ease), color 0.16s var(--th-ease),
+              transform 0.1s var(--th-ease);
+  padding: 0;
+}
+.pp-gear:hover  { background: var(--th-card-hover); color: var(--th-text); }
+.pp-gear:active { transform: scale(0.9); transition-duration: 0.08s; }
+.pp-gear.active { background: var(--th-fill-bg); color: var(--th-fill-fg); }
+.pp-gear svg { transition: transform 0.42s var(--th-spring); }
+.pp-gear.active svg { transform: rotate(90deg); }
+/* Поворот на 90° у почти симметричной шестерёнки читается слабо, а на
+   жёлтой плашке в тёмной теме почти не виден. Добавляем явную прокрутку
+   по клику — она не зависит от состояния и одинакова в обеих темах. */
+.pp-gear.pp-spin svg { animation: pp-spin 0.44s var(--th-spring); }
+@keyframes pp-spin { from { transform: rotate(0deg); } to { transform: rotate(180deg); } }
+.pp-gear.active.pp-spin svg { animation: pp-spin-on 0.44s var(--th-spring); }
+@keyframes pp-spin-on { from { transform: rotate(-90deg); } to { transform: rotate(90deg); } }
+
+/* ── Раскрытие панели настроек ──
+   Высота анимируется через grid 0fr→1fr: содержимое расталкивает
+   карточку плавно, а не рывком после мгновенного display. */
+.pp-cfg-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.34s var(--th-ease);
+}
+.pp-cfg-wrap.pp-open { grid-template-rows: 1fr; }
+.pp-cfg-inner { overflow: hidden; min-height: 0; }
+
+.pp-cfg {
+  border-top: 1px solid var(--th-border);
+  margin-top: 9px;
+  padding-top: 9px;
+  display: flex; flex-direction: column; gap: 8px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s var(--th-ease), transform 0.28s var(--th-ease);
+}
+.pp-cfg-wrap.pp-open .pp-cfg { opacity: 1; transform: translateY(0); transition-delay: 0.06s; }
+
+.pp-cfg-note {
+  font-size: 11px; color: rgba(var(--th-text-rgb), 0.4);
+  text-align: center; line-height: 1.5;
+}
+.pp-cfg-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: rgba(var(--th-text-rgb), 0.62); gap: 8px;
+}
+.pp-cfg-row > span { white-space: nowrap; }
+
+/* ── Кнопки экспорта/импорта ── */
+.pp-config-btns { display: flex; gap: 8px; margin-top: 10px; }
+.pp-config-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 8px 6px;
+  background: var(--th-card); border: 1px solid var(--th-border);
+  border-radius: 9px; color: rgba(var(--th-text-rgb), 0.68);
+  font-size: 12px; font-family: inherit; cursor: pointer;
+  transition: background 0.16s var(--th-ease), color 0.16s var(--th-ease),
+              border-color 0.16s var(--th-ease), transform 0.1s var(--th-ease);
+}
+.pp-config-btn:hover {
+  background: var(--th-card-hover); color: var(--th-text); border-color: var(--th-border-str);
+}
+.pp-config-btn:active { transform: scale(0.97); transition-duration: 0.08s; }
+
+/* ── Переключатель ── */
+.pp-switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
+.pp-switch.pp-switch-sm { width: 34px; height: 19px; }
+.pp-switch-sm .pp-slider::before { height: 13px; width: 13px; }
+.pp-switch-sm input:checked + .pp-slider::before { transform: translateX(15px); }
+.pp-switch input { opacity: 0; width: 0; height: 0; }
+.pp-slider {
+  position: absolute; inset: 0; cursor: pointer;
+  background: var(--th-track);
+  border-radius: 22px;
+  transition: background 0.24s var(--th-ease);
+}
+.pp-slider::before {
+  content: ""; position: absolute;
+  height: 16px; width: 16px; left: 3px; bottom: 3px;
+  background: var(--th-knob); border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  /* бегунок едет с лёгким перелётом — он предмет с инерцией */
+  transition: transform 0.34s var(--th-spring);
+}
+.pp-switch input:checked + .pp-slider { background: var(--th-switch-on); }
+.pp-switch input:checked + .pp-slider::before { transform: translateX(18px); }
+.pp-switch:active .pp-slider::before { width: 19px; transition-duration: 0.12s; }
+.pp-switch input:focus-visible + .pp-slider { outline: 2px solid #FFD000; outline-offset: 2px; }
+
+/* ── Захват горячей клавиши ── */
+.pp-hk-capture {
+  background: var(--th-card); border: 1px solid var(--th-border-str);
+  border-radius: 8px; color: var(--th-text);
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 5px 12px; cursor: pointer;
+  transition: border-color 0.16s var(--th-ease), color 0.16s var(--th-ease),
+              background 0.16s var(--th-ease), transform 0.1s var(--th-ease);
+  min-width: 60px; text-align: center; flex-shrink: 0;
+}
+.pp-hk-capture:hover { border-color: rgba(var(--th-accent-rgb), 0.45); color: var(--th-accent); }
+.pp-hk-capture:active { transform: scale(0.96); transition-duration: 0.08s; }
+.pp-hk-capture.pp-hk-capturing {
+  border-color: #FFD000; color: var(--th-text);
+  background: var(--th-card-hover);
+  animation: pp-pulse 1.6s ease-in-out infinite;
+}
+@keyframes pp-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--th-accent-rgb), 0.28); }
+  50%      { box-shadow: 0 0 0 4px rgba(var(--th-accent-rgb), 0); }
+}
+
+/* Кнопка внутри строки настроек — тот же вид, что у ловушки хоткея */
+.pp-cfg-btn {
+  background: var(--th-card); border: 1px solid var(--th-border-str);
+  border-radius: 8px; color: var(--th-text);
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 5px 12px; cursor: pointer; flex-shrink: 0;
+  transition: border-color 0.16s var(--th-ease), color 0.16s var(--th-ease),
+              background 0.16s var(--th-ease), transform 0.1s var(--th-ease);
+}
+.pp-cfg-btn:hover { border-color: rgba(var(--th-accent-rgb), 0.45); color: var(--th-accent); }
+.pp-cfg-btn:active { transform: scale(0.96); transition-duration: 0.08s; }
+
+.pp-cfg-right { display: flex; align-items: center; gap: 6px; }
+.pp-cfg-right input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 72px; height: 4px; border-radius: 2px;
+  background: var(--th-track); cursor: pointer; outline: none;
+}
+.pp-cfg-right input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px;
+  border-radius: 50%; background: #FFD000; cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.14s var(--th-spring);
+}
+.pp-cfg-right input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.25); }
+.pp-cfg-right span {
+  font-size: 11px; color: rgba(var(--th-text-rgb), 0.42);
+  min-width: 26px; text-align: right;
+}
+
+/* ── Сегментированный выбор размера ── */
+.pp-seg {
+  display: flex; gap: 0;
+  background: var(--th-card);
+  border: 1px solid var(--th-border);
+  border-radius: 8px; overflow: hidden; flex-shrink: 0;
+}
+.pp-seg-btn {
+  border: none; background: none; cursor: pointer;
+  font-family: inherit; font-size: 11px; font-weight: 500;
+  color: rgba(var(--th-text-rgb), 0.5);
+  padding: 5px 9px;
+  transition: background 0.2s var(--th-ease), color 0.2s var(--th-ease);
+}
+.pp-seg-btn:hover { color: var(--th-text); }
+.pp-seg-btn.pp-seg-active { background: var(--th-fill-bg); color: var(--th-fill-fg); font-weight: 600; }
+
+/* ── Жёлтые кнопки ── */
+.pp-open-schedule-btn,
+.pp-open-btn {
+  background: var(--th-fill-bg);
+  border: 1px solid var(--th-fill-border);
+  border-radius: 9px;
+  color: var(--th-fill-fg);
+  font-family: inherit; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s var(--th-ease), transform 0.1s var(--th-ease),
+              box-shadow 0.18s var(--th-ease);
+}
+.pp-open-schedule-btn { width: 100%; padding: 8px 10px; font-size: 12px; text-align: center; }
+.pp-open-btn { padding: 6px 14px; font-size: 12px; }
+
+.pp-open-schedule-btn:hover,
+.pp-open-btn:hover {
+  background: var(--th-fill-bg-hover);
+  box-shadow: 0 2px 10px rgba(var(--th-accent-rgb), 0.28);
+}
+.pp-open-schedule-btn:active,
+.pp-open-btn:active { transform: scale(0.97); transition-duration: 0.08s; box-shadow: none; }
+
+#pp-footer {
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid var(--th-border);
+  font-size: 11px; color: rgba(var(--th-text-rgb), 0.4);
+  text-align: center;
+}
+
+/* ── Тост ── */
+#pp-toast[hidden] { display: none; }
+#pp-toast {
+  position: fixed;
+  bottom: 10px; left: 10px; right: 10px;
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--th-pop);
+  border: 1px solid var(--th-border-str);
+  font-size: 12.5px; font-weight: 500;
+  color: var(--th-text);
+  z-index: 9999;
+  box-shadow: var(--th-shadow);
+  animation: pp-toast-in 0.34s var(--th-spring) both;
+}
+#pp-toast.pp-toast-hiding { animation: pp-toast-out 0.2s var(--th-ease-out) forwards; }
+@keyframes pp-toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pp-toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(6px) scale(0.97); }
+}
+#pp-toast-icon { display: flex; align-items: center; flex-shrink: 0; }
+#pp-toast-msg  { flex: 1; }
+
+/* ── Появление попапа ──
+   Попап открывают десятки раз за смену, поэтому никакой лесенки:
+   вступление должно быть на грани заметности, иначе оно читается
+   как задержка отклика, а не как украшение. */
+body { animation: pp-enter 0.13s var(--th-ease) both; }
+@keyframes pp-enter {
+  from { opacity: 0; transform: scale(0.985); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Уважение к системной настройке ──
+   Убираем перемещения и перелёты, оставляем смену цвета и прозрачности:
+   они помогают понять, что произошло, и вестибулярно безвредны. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.12s !important;
+  }
+  body { animation: none; opacity: 1; transform: none; }
+  .pp-cfg-wrap { transition: none; }
+  #pp-theme-toggle svg { transition: opacity 0.12s linear; transform: none !important; }
+  .pp-help::after { transform: none !important; }
+}

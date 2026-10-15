@@ -1,0 +1,424 @@
+/* ════════════════════════════════════════════════════════════
+   T-Helper · Заметки
+   Два оформления: «стекло» (полупрозрачная подложка с размытием
+   фона) и «обычное» (сплошная заливка). Переключается классом
+   thn-style-* и на столбике язычков, и на самих окнах.
+   ════════════════════════════════════════════════════════════ */
+#thn-rail, .thn-note {
+  --thn-bg:        #17171A;
+  --thn-bg-glass:  rgba(22, 22, 26, 0.62);
+  --thn-head:      #212126;
+  --thn-text:      #EDEDEF;
+  --thn-text-rgb:  237, 237, 239;
+  --thn-border:    rgba(255, 255, 255, 0.09);
+  --thn-edge:      rgba(255, 255, 255, 0.16);
+  --thn-shadow:    0 14px 40px rgba(0, 0, 0, 0.55);
+  --thn-color:     #FFD000;
+  --thn-ease:      cubic-bezier(0.32, 0.72, 0, 1);
+  --thn-spring:    cubic-bezier(0.34, 1.32, 0.64, 1);
+  font-family: 'Onest', system-ui, -apple-system, sans-serif;
+}
+#thn-rail[data-theme="white"], .thn-note[data-theme="white"] {
+  --thn-bg:       #FFFFFF;
+  --thn-bg-glass: rgba(252, 252, 253, 0.7);
+  --thn-head:     #F4F4F6;
+  --thn-text:     #1B1C1D;
+  --thn-text-rgb: 27, 28, 29;
+  --thn-border:   rgba(0, 0, 0, 0.1);
+  --thn-edge:     rgba(255, 255, 255, 0.9);
+  --thn-shadow:   0 14px 40px rgba(0, 0, 0, 0.16);
+}
+
+/* ─────────── Столбик язычков ─────────── */
+#thn-rail {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2147483644;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;                /* кликабельны только сами язычки */
+}
+#thn-rail.thn-side-right { right: 0; align-items: flex-end; }
+#thn-rail.thn-side-left  { left: 0;  align-items: flex-start; }
+
+.thn-tab {
+  pointer-events: auto;
+  display: flex; align-items: center; gap: 6px;
+  min-height: 30px;
+  padding: 6px 9px;
+  border: 1px solid var(--thn-border);
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  background: var(--thn-head);
+  color: var(--thn-text);
+  font-family: inherit; font-size: 11.5px; font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--thn-shadow);
+  /* цветная кромка — это и есть «цвет заметки», который выбирает пользователь */
+  border-left: 3px solid var(--thn-color);
+  max-width: 36px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.28s var(--thn-ease), background 0.18s var(--thn-ease),
+              transform 0.14s var(--thn-ease);
+}
+#thn-rail.thn-side-left .thn-tab {
+  border-radius: 0 10px 10px 0;
+  border-right: 1px solid var(--thn-border);
+  border-left: none;
+  border-right: 3px solid var(--thn-color);
+}
+/* Язычок наполовину утоплен за край и выдвигается по наведению —
+   так столбик не отвлекает в покое, а отклик виден до клика.
+   Все язычки одной ширины: раньше постоянные сжимались до 14px, и значок
+   вместе с рамками туда не помещался — его срезало по overflow. */
+#thn-rail.thn-side-right .thn-tab { transform: translateX(7px); }
+#thn-rail.thn-side-left  .thn-tab { transform: translateX(-7px); }
+#thn-rail.thn-side-right .thn-tab:hover,
+#thn-rail.thn-side-left  .thn-tab:hover { transform: translateX(0); }
+.thn-tab:hover { max-width: 190px; background: var(--thn-bg); }
+
+/* Название проявляется чуть позже ширины, чтобы буквы не ползли
+   вместе с краем, — так раскрытие читается одним плавным движением. */
+.thn-tab-label {
+  opacity: 0;
+  overflow: hidden; text-overflow: ellipsis;
+  transition: opacity 0.16s var(--thn-ease);
+}
+.thn-tab:hover .thn-tab-label {
+  opacity: 1;
+  transition: opacity 0.22s var(--thn-ease) 0.1s;
+}
+
+/* Одна кривая на всё движение и без пружины: перелёт на выдвижении
+   у края экрана читается как дёрганье, а не как отклик. */
+.thn-tab {
+  transition: max-width 0.34s var(--thn-ease),
+              transform 0.34s var(--thn-ease),
+              background 0.2s var(--thn-ease),
+              box-shadow 0.2s var(--thn-ease);
+}
+#thn-rail.thn-side-right .thn-tab:active,
+#thn-rail.thn-side-left  .thn-tab:active {
+  transform: translateX(0) scale(0.97);
+  transition-duration: 0.09s;
+}
+
+/* Цветная точка вместо значка, если он не выбран */
+.thn-tab-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--thn-color);
+  display: block;
+}
+
+.thn-tab-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 15px; flex-shrink: 0; color: var(--thn-color);
+}
+.thn-tab-add { color: rgba(var(--thn-text-rgb), 0.55); border-left-color: var(--thn-border); }
+#thn-rail.thn-side-left .thn-tab-add { border-right-color: var(--thn-border); }
+
+#thn-rail.thn-style-glass .thn-tab {
+  background: var(--thn-bg-glass);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-top-color: var(--thn-edge);
+}
+
+/* Значок заметки. Png чёрный с прозрачным фоном, поэтому берём его как
+   маску — так он принимает цвет заметки и не требует своей палитры. */
+.thn-ico {
+  display: block;
+  width: 14px; height: 14px;
+  background: currentColor;
+  -webkit-mask-image: var(--thn-ico); mask-image: var(--thn-ico);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-size: contain; mask-size: contain;
+  -webkit-mask-position: center; mask-position: center;
+}
+.thn-tab-icon .thn-ico { color: var(--thn-color); }
+.thn-dot .thn-ico { color: var(--thn-color); }
+
+/* ─────────── Окно заметки ─────────── */
+.thn-note {
+  position: fixed;
+  z-index: 2147483644;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px; min-height: 120px;
+  border: 1px solid var(--thn-border);
+  border-radius: 13px;
+  background: var(--thn-bg);
+  color: var(--thn-text);
+  box-shadow: var(--thn-shadow);
+  overflow: hidden;
+}
+.thn-note.thn-top { z-index: 2147483645; }
+.thn-note.thn-dragging { transition: none; cursor: grabbing; }
+.thn-note.thn-style-glass {
+  background: var(--thn-bg-glass);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border-top-color: var(--thn-edge);
+}
+/* Разворачивание и сворачивание анимирует JS: точки старта зависят от
+   положения язычка и считаются на лету. Здесь только состояние покоя. */
+
+.thn-head {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 8px;
+  background: rgba(var(--thn-text-rgb), 0.05);
+  border-bottom: 1px solid var(--thn-border);
+  cursor: grab;
+  flex-shrink: 0;
+  /* цветная полоса сверху повторяет цвет язычка */
+  box-shadow: inset 0 2px 0 0 var(--thn-color);
+}
+.thn-head:active { cursor: grabbing; }
+.thn-dot { display: flex; color: var(--thn-color); flex-shrink: 0; }
+.thn-title {
+  flex: 1; min-width: 0;
+  cursor: grab;              /* строка целиком читается как место захвата */
+  background: none; border: none; outline: none;
+  color: var(--thn-text);
+  font-family: inherit; font-size: 12px; font-weight: 600;
+}
+.thn-title:focus { cursor: text; }
+.thn-note.thn-dragging .thn-title { cursor: grabbing; }
+.thn-head-btns { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+
+.thn-btn {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 6px; padding: 0;
+  background: none; cursor: pointer;
+  color: rgba(var(--thn-text-rgb), 0.5);
+  transition: background 0.15s var(--thn-ease), color 0.15s var(--thn-ease),
+              transform 0.1s var(--thn-ease);
+}
+.thn-btn:hover  { background: rgba(var(--thn-text-rgb), 0.1); color: var(--thn-text); }
+.thn-btn:active { transform: scale(0.9); transition-duration: 0.07s; }
+.thn-pick-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--thn-color);
+  box-shadow: 0 0 0 1px rgba(var(--thn-text-rgb), 0.22) inset;
+}
+.thn-note.thn-editing .thn-edit {
+  background: linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%);
+  color: #1B1C1D;
+}
+
+/* Пояснение к временной заметке */
+.thn-hint {
+  position: relative;
+  width: 14px; height: 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.2px solid rgba(var(--thn-text-rgb), 0.35);
+  border-radius: 50%;
+  font-size: 9px; font-weight: 700; line-height: 1;
+  color: rgba(var(--thn-text-rgb), 0.55);
+  cursor: help;
+}
+.thn-hint::after {
+  content: attr(data-tip);
+  position: absolute; top: 20px; left: 50%;
+  transform: translateX(-50%) translateY(-4px) scale(0.97);
+  transform-origin: top center;
+  width: 210px; padding: 8px 10px;
+  border-radius: 9px;
+  background: var(--thn-head);
+  border: 1px solid var(--thn-border);
+  box-shadow: var(--thn-shadow);
+  font-size: 11px; font-weight: 400; line-height: 1.45;
+  color: rgba(var(--thn-text-rgb), 0.82);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.16s var(--thn-ease), transform 0.22s var(--thn-spring),
+              visibility 0s linear 0.16s;
+  z-index: 3;
+}
+.thn-hint:hover::after {
+  opacity: 1; visibility: visible;
+  transform: translateX(-50%) translateY(0) scale(1);
+  transition-delay: 0s;
+}
+
+/* Единое меню цвета и значка. Раньше системный выбор цвета висел в шапке
+   отдельным полем и выбивался из оформления — теперь он спрятан под пункт
+   «свой», а видимая часть набрана нашими же элементами. */
+.thn-picker {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--thn-text-rgb), 0.28) transparent;
+  position: absolute; top: 36px; right: 8px; z-index: 4;
+  width: 202px; padding: 9px;
+  border-radius: 11px;
+  background: var(--thn-head);
+  border: 1px solid var(--thn-border);
+  box-shadow: var(--thn-shadow);
+  animation: thn-pick-in 0.2s var(--thn-spring);
+}
+@keyframes thn-pick-in {
+  from { opacity: 0; transform: translateY(-5px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.thn-pick-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: rgba(var(--thn-text-rgb), 0.4);
+  margin: 0 0 6px 2px;
+}
+.thn-pick-colors {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px;
+  margin-bottom: 10px;
+}
+.thn-sw {
+  position: relative;
+  width: 22px; height: 22px; padding: 0;
+  border: none; border-radius: 7px; cursor: pointer;
+  background: var(--sw, transparent);
+  transition: transform 0.14s var(--thn-spring), box-shadow 0.14s var(--thn-ease);
+}
+.thn-sw:hover { transform: scale(1.12); }
+.thn-sw-on { box-shadow: 0 0 0 2px var(--thn-head), 0 0 0 3.5px var(--sw, currentColor); }
+.thn-sw-custom {
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border: 1px dashed rgba(var(--thn-text-rgb), 0.3);
+  /* радужный кружок как метка «любой цвет» */
+  background: conic-gradient(#ff6b6b, #FFD000, #51cf66, #4dabf7, #a78bfa, #ff6b6b);
+}
+.thn-sw-custom input {
+  width: 200%; height: 200%; border: none; padding: 0;
+  background: none; cursor: pointer; opacity: 0;
+}
+.thn-pick-icons { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; }
+.thn-ico-btn {
+  width: 100%; height: 26px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 7px; background: none; cursor: pointer;
+  color: var(--thn-color);
+  transition: background 0.14s var(--thn-ease);
+}
+.thn-ico-btn:hover { background: rgba(var(--thn-text-rgb), 0.12); }
+.thn-ico-btn.thn-ico-on { background: rgba(var(--thn-text-rgb), 0.16); }
+.thn-ico-none { color: rgba(var(--thn-text-rgb), 0.5); font-size: 11px; }
+
+/* Копирование выноски */
+.thn-copy {
+  position: absolute; z-index: 3;
+  width: 22px; height: 22px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--thn-border); border-radius: 7px;
+  background: var(--thn-head);
+  color: rgba(var(--thn-text-rgb), 0.65);
+  cursor: pointer;
+  transition: background 0.14s var(--thn-ease), color 0.14s var(--thn-ease),
+              transform 0.1s var(--thn-ease);
+}
+.thn-copy[hidden] { display: none; }
+.thn-copy:hover { background: var(--thn-bg); color: var(--thn-text); }
+.thn-copy:active { transform: scale(0.9); transition-duration: 0.07s; }
+.thn-copy.thn-copied { color: #1B1C1D; background: linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%); }
+
+/* ─────────── Панель форматирования ─────────── */
+.thn-toolbar {
+  display: flex; align-items: center; gap: 2px;
+  padding: 5px 7px;
+  border-bottom: 1px solid var(--thn-border);
+  background: rgba(var(--thn-text-rgb), 0.03);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  animation: thn-bar 0.22s var(--thn-ease);
+}
+.thn-toolbar[hidden] { display: none; }
+@keyframes thn-bar {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.thn-toolbar button {
+  min-width: 24px; height: 22px; padding: 0 5px;
+  border: none; border-radius: 6px; background: none;
+  color: rgba(var(--thn-text-rgb), 0.7);
+  font-family: inherit; font-size: 11.5px; line-height: 1;
+  cursor: pointer;
+  transition: background 0.14s var(--thn-ease), color 0.14s var(--thn-ease);
+}
+.thn-toolbar button:hover { background: rgba(var(--thn-text-rgb), 0.1); color: var(--thn-text); }
+.thn-toolbar button:active { background: rgba(var(--thn-text-rgb), 0.16); }
+.thn-sep { width: 1px; height: 14px; background: var(--thn-border); margin: 0 3px; }
+
+/* ─────────── Текст ─────────── */
+.thn-body {
+  flex: 1;
+  padding: 9px 11px;
+  overflow: auto;
+  outline: none;
+  /* свой скроллбар вместо системного — оформление задаётся стандартными
+     свойствами: при них Chrome отключает правила ::-webkit-scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--thn-text-rgb), 0.28) transparent;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(var(--thn-text-rgb), 0.9);
+  word-break: break-word;
+}
+.thn-body:empty::before {
+  content: 'Заметка…';
+  color: rgba(var(--thn-text-rgb), 0.3);
+  pointer-events: none;
+}
+/* Дизайн-системы почти всегда сбрасывают списки правилом на ul/li, и оно
+   бьёт по нашему содержимому тоже — маркеры исчезали целиком. Возвращаем
+   их принудительно, иначе красить нечего. */
+.thn-body ul { margin: 0 0 0 18px !important; padding: 0 !important;
+               list-style: disc outside !important; }
+.thn-body ol { margin: 0 0 0 18px !important; padding: 0 !important;
+               list-style: decimal outside !important; }
+.thn-body li { display: list-item !important; list-style: inherit !important;
+                margin: 0 !important; padding: 0 !important; }
+/* блоки внутри заметки не должны приносить собственные внешние отступы:
+   иначе после списка или абзаца остаётся пустая полоса */
+.thn-body > div, .thn-body > p { margin: 0; }
+.thn-body ul li::marker { color: #FFD000; font-size: 1.15em; }
+.thn-body ol li::marker { color: #FFD000; font-weight: 700; }
+
+/* ── Выноска ──
+   Чуть светлее фона заметки, со значком в левом верхнем углу. Значок
+   рисуется маской по градиенту: так он не попадает в сохранённый текст
+   и перекрашивается вместе с оформлением. */
+.thn-callout {
+  position: relative;
+  margin: 8px 0;
+  padding: 0.85em 0.9em 0.85em 2.6em;
+  border-radius: 10px;
+  background: rgba(var(--thn-text-rgb), 0.07);
+  border: 1px solid rgba(var(--thn-text-rgb), 0.09);
+}
+.thn-callout::before {
+  content: "";
+  position: absolute;
+  /* в em — значок растёт и уменьшается вместе с текстом выноски */
+  left: 0.85em; top: 0.95em;
+  width: 1.15em; height: 1.15em;
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 55%, #6366f1 100%);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22black%22%3E%3Cpath%20d%3D%22M10.9%203.3c1.3-1%203.2-.2%203.4%201.4.3%202.3.4%204.6.4%207.3s-.1%205-.4%207.3c-.2%201.6-2.1%202.4-3.4%201.4l-3.1-2.4a1%201%200%200%200-.6-.2H5.4A3.4%203.4%200%200%201%202%2014.7V9.3A3.4%203.4%200%200%201%205.4%205.9h1.8a1%201%200%200%200%20.6-.2l3.1-2.4Z%22%2F%3E%3Cpath%20d%3D%22M17.6%208.1a1.2%201.2%200%200%201%201.3%201.1c.1%201%20.1%201.9.1%202.8s0%201.8-.1%202.8a1.2%201.2%200%200%201-2.4-.2c.1-.9.1-1.7.1-2.6s0-1.7-.1-2.6a1.2%201.2%200%200%201%201.1-1.3Z%22%2F%3E%3Cpath%20d%3D%22M21.3%206.2a1.2%201.2%200%200%201%201.3%201.1c.2%201.6.2%203.2.2%204.7s0%203.1-.2%204.7a1.2%201.2%200%200%201-2.4-.2c.1-1.5.2-3%20.2-4.5s-.1-3-.2-4.5a1.2%201.2%200%200%201%201.1-1.3Z%22%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22black%22%3E%3Cpath%20d%3D%22M10.9%203.3c1.3-1%203.2-.2%203.4%201.4.3%202.3.4%204.6.4%207.3s-.1%205-.4%207.3c-.2%201.6-2.1%202.4-3.4%201.4l-3.1-2.4a1%201%200%200%200-.6-.2H5.4A3.4%203.4%200%200%201%202%2014.7V9.3A3.4%203.4%200%200%201%205.4%205.9h1.8a1%201%200%200%200%20.6-.2l3.1-2.4Z%22%2F%3E%3Cpath%20d%3D%22M17.6%208.1a1.2%201.2%200%200%201%201.3%201.1c.1%201%20.1%201.9.1%202.8s0%201.8-.1%202.8a1.2%201.2%200%200%201-2.4-.2c.1-.9.1-1.7.1-2.6s0-1.7-.1-2.6a1.2%201.2%200%200%201%201.1-1.3Z%22%2F%3E%3Cpath%20d%3D%22M21.3%206.2a1.2%201.2%200%200%201%201.3%201.1c.2%201.6.2%203.2.2%204.7s0%203.1-.2%204.7a1.2%201.2%200%200%201-2.4-.2c.1-1.5.2-3%20.2-4.5s-.1-3-.2-4.5a1.2%201.2%200%200%201%201.1-1.3Z%22%2F%3E%3C%2Fsvg%3E");
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+
+.thn-resize {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 16px; height: 16px;
+  cursor: nwse-resize;
+  /* две короткие насечки — привычная метка «потяни за угол» */
+  background:
+    linear-gradient(135deg, transparent 50%, rgba(var(--thn-text-rgb), 0.28) 50% 60%, transparent 60%),
+    linear-gradient(135deg, transparent 68%, rgba(var(--thn-text-rgb), 0.28) 68% 78%, transparent 78%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thn-toolbar { animation: none; }
+  .thn-tab, .thn-btn { transition-duration: 0.01ms; }
+}

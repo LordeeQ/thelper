@@ -1,0 +1,232 @@
+/* ════════════════════════════════════════════════════════════
+   T-Helper · Блюр чувствительных данных
+   Маскировка включается классом th-blur-on на <html>, поэтому
+   применяется и к узлам, которые Angular дорисует позже, — без
+   какого-либо участия JS.
+
+   Настоящий текст просто не рисуется (color: transparent), а поверх
+   кладётся ДЕКОРАТИВНАЯ плашка — сплошная заливка с косой штриховкой,
+   заданная прямо в CSS.
+
+   Почему не размывать сам текст. Любой блюр, полученный из реальных
+   глифов, обратим: он сохраняет гауссиану их контуров, и на скриншоте
+   буквы вытягиваются обычным усилением контраста (проверено — при
+   автоуровнях текст проступал). Насыщенная тень это лечила, но
+   выглядела плоским пятном. Плашка снимает противоречие: она никак не
+   выведена из букв, поэтому восстанавливать в ней нечего. Утекает
+   только ширина элемента.
+
+   Раньше здесь лежал узор «слов» под размытием — он изображал текст,
+   который не прочитать. Читалось это как сбой отрисовки. Плашка со
+   штриховкой выглядит как намеренно закрытое поле, и это честнее:
+   данные не испорчены, а спрятаны. Заодно ушёл filter — размытие
+   заставляло браузер перерисовывать слой на каждой прокрутке.
+   ════════════════════════════════════════════════════════════ */
+
+html.th-blur-on {
+  /* Штриховка поверх нейтрального серого: серый читается и на белой
+     карточке, и на тёмной шапке чата, а наклон и шаг одинаковы у всех
+     полей — поле либо закрыто, либо нет, полутонов тут не бывает. */
+  --th-bar:
+    repeating-linear-gradient(115deg,
+      rgba(255, 255, 255, 0.11) 0 5px,
+      rgba(0, 0, 0, 0.055) 5px 11px),
+    rgba(126, 134, 152, 0.93);
+  --th-bar-edge: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+html.th-blur-on .phone-info__number,
+html.th-blur-on .phone-info_number,
+html.th-blur-on [data-automation-id="customer-placeholder"],
+html.th-blur-on [automation-id="customer-info-first-name"],
+html.th-blur-on [automation-id="customer-info-second-name"],
+html.th-blur-on [automation-id="customer-info-middle-name"],
+html.th-blur-on wug-tab-content span:not([automation-id="timer"] *),
+html.th-blur-on [automation-id="chat-header-content-title"],
+html.th-blur-on .account,
+html.th-blur-on .description,
+html.th-blur-on [data-automation-id="timeline-event-description"],
+html.th-blur-on .th-blur-contact,
+html.th-blur-on .th-blur-id {
+  position: relative !important;
+  color: transparent !important;
+  /* блочные контейнеры (телефон, ФИО) растянулись бы на всю ширину карточки,
+     и полоса ушла бы далеко за текст — прижимаем её к содержимому */
+  width: fit-content !important;
+  max-width: 100% !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;          /* чтобы нельзя было выделить и «подсмотреть» подсветкой */
+  cursor: default !important;
+}
+
+html.th-blur-on .phone-info__number::before,
+html.th-blur-on .phone-info_number::before,
+html.th-blur-on [data-automation-id="customer-placeholder"]::before,
+html.th-blur-on [automation-id="customer-info-first-name"]::before,
+html.th-blur-on [automation-id="customer-info-second-name"]::before,
+html.th-blur-on [automation-id="customer-info-middle-name"]::before,
+html.th-blur-on wug-tab-content span:not([automation-id="timer"] *)::before,
+html.th-blur-on [automation-id="chat-header-content-title"]::before,
+html.th-blur-on .account::before,
+html.th-blur-on .description::before,
+html.th-blur-on [data-automation-id="timeline-event-description"]::before,
+html.th-blur-on .th-blur-contact::before,
+html.th-blur-on .th-blur-id::before {
+  content: "" !important;
+  position: absolute;
+  /* с небольшим выносом за текст: у плашки чёткий край, и вплотную
+     подрезанные буквы выглядывали бы по краям */
+  left: -4px; right: -4px; top: -1px; bottom: -1px;
+  background: var(--th-bar);
+  border-radius: 5px;
+  box-shadow: var(--th-bar-edge);
+  pointer-events: none;
+}
+
+/* Номер счёта иногда лежит в самом .account, а иногда во вложенном
+   span.copy-host, которому цвет задан отдельно, — гасим и потомков. */
+html.th-blur-on .account * { color: transparent !important; }
+
+/* Таймер SLA во вкладке обращения закрывать нельзя: по нему оператор
+   и работает. Правило wug-tab-content span накрывало и его, поэтому
+   потомки бейджа исключены из селектора выше, а не перекрашены
+   поверх — так у бейджа остаётся его собственный цвет, в том числе
+   красный у просроченного. */
+
+/* Крестик закрытия вкладки — родной вид, без маскировки */
+html.th-blur-on wug-tab-content tui-svg span { color: inherit !important; }
+html.th-blur-on wug-tab-content tui-svg span::before { display: none !important; }
+
+/* Иконка копирования лежит внутри замаскированного узла: поднимаем её
+   над декоративной полосой и возвращаем цвет — currentColor она
+   унаследовала бы прозрачным и исчезла вместе с текстом. */
+html.th-blur-on .th-blur-id .t-left {
+  position: relative !important;
+  z-index: 1;
+}
+html.th-blur-on .th-blur-id tui-svg,
+html.th-blur-on .th-blur-id .t-left,
+html.th-blur-on .th-blur-id svg {
+  color: rgba(110, 120, 142, 0.95) !important;
+  text-shadow: none !important;
+}
+
+/* ─────────── Всплывашка о смене режима ─────────── */
+#th-blur-toast {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483646;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  background: rgba(23, 23, 26, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+  font-family: 'Onest', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  animation: th-blur-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+#th-blur-toast.th-blur-hiding { animation: th-blur-out 0.18s ease forwards; }
+/* таймер ВЗ занимает то же место сверху по центру — уступаем ему строку */
+#th-blur-toast.th-blur-below-timer { top: 60px; }
+#th-blur-toast svg { display: block; flex-shrink: 0; }
+
+@keyframes th-blur-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+@keyframes th-blur-out {
+  from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateX(-50%) translateY(-5px) scale(0.97); }
+}
+
+/* ─────────── Предупреждение при включении блюра ───────────
+   Окно живёт на чужой странице, поэтому ключевые свойства
+   проставлены явно и через !important: у сайта-хозяина могут быть
+   свои правила на *, button, label и наследуемый размер шрифта. */
+#th-blur-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  background: rgba(8, 9, 16, 0.55) !important;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  font-family: 'Onest', system-ui, -apple-system, sans-serif !important;
+  animation: th-blur-fade 0.16s ease both;
+}
+#th-blur-modal * { box-sizing: border-box !important; }
+
+#th-blur-modal-card {
+  width: 430px !important;
+  max-width: 100% !important;
+  max-height: calc(100vh - 40px) !important;
+  overflow-y: auto !important;
+  padding: 22px 24px 18px !important;
+  border-radius: 16px !important;
+  background: rgba(20, 20, 23, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5) !important;
+  text-align: center !important;
+  animation: th-blur-pop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+#th-blur-modal-icon { display: flex !important; justify-content: center !important; margin-bottom: 10px !important; }
+#th-blur-modal-icon svg { display: block !important; }
+
+#th-blur-modal-title {
+  font-size: 19px !important; font-weight: 700 !important;
+  color: #ff9f43 !important; margin-bottom: 12px !important; letter-spacing: 0.2px !important;
+}
+
+#th-blur-modal-text {
+  text-align: left !important;
+  font-size: 12.5px !important; font-weight: 400 !important; line-height: 1.55 !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+#th-blur-modal-text p { margin: 0 0 9px !important; padding: 0 !important; }
+#th-blur-modal-text p:last-child {
+  margin-bottom: 0 !important;
+  color: #ff9f43 !important; font-weight: 600 !important;
+}
+
+#th-blur-modal-ok {
+  display: block !important; width: 100% !important;
+  margin: 16px 0 0 !important; padding: 10px 14px !important;
+  border: none !important; border-radius: 10px !important;
+  background: #ff9f43 !important; color: #1a1205 !important;
+  font-family: inherit !important; font-size: 13.5px !important; font-weight: 600 !important;
+  cursor: pointer !important; transition: background 0.12s !important;
+}
+#th-blur-modal-ok:hover { background: #ffb063 !important; }
+
+#th-blur-modal-never {
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  gap: 7px !important; margin-top: 12px !important; cursor: pointer !important;
+  font-size: 12px !important; color: rgba(255, 255, 255, 0.55) !important;
+  user-select: none !important;
+}
+#th-blur-modal-never input {
+  width: 14px !important; height: 14px !important; margin: 0 !important;
+  accent-color: #ff9f43 !important; cursor: pointer !important; flex-shrink: 0 !important;
+}
+
+@keyframes th-blur-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes th-blur-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

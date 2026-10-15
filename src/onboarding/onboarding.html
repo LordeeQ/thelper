@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>T-Helper — знакомство</title>
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+  <div class="ob-shell">
+    <header class="ob-top">
+      <img class="ob-logo" src="/icons/icon48.png" alt="">
+      <span class="ob-brand">T-Helper</span>
+      <!-- Тема та же, что в самом расширении, и переключается здесь же:
+           знакомство не должно быть единственным местом, которое всегда
+           тёмное, если человек выбрал белую. -->
+      <button class="ob-theme" id="ob-theme" type="button" title="Сменить тему" aria-label="Сменить тему">
+        <svg class="ob-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 1.9v2.2M12 19.9v2.2M4.05 4.05l1.56 1.56M18.39 18.39l1.56 1.56M1.9 12h2.2M19.9 12h2.2M4.05 19.95l1.56-1.56M18.39 5.61l1.56-1.56"/></g></svg>
+        <svg class="ob-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.77 2.79a.72.72 0 0 1 .93-.6 9.6 9.6 0 1 1-12.3 12.3.72.72 0 0 1 .84-.93 8.13 8.13 0 0 0 10.53-10.53 4.6 4.6 0 0 1 0-.24Z"/></svg>
+      </button>
+      <button class="ob-skip" id="ob-skip" type="button">Пропустить</button>
+    </header>
+
+    <div class="ob-hero">
+      <h1>Добро пожаловать в <span>T-Helper</span></h1>
+      <p>Семь карточек — и ты знаешь, что умеет расширение и как его вызвать.</p>
+    </div>
+
+    <div class="ob-viewport">
+      <div class="ob-track" id="ob-track">
+
+        <!-- ═══ 1 · Быстрые фразы ═══ -->
+        <section class="ob-slide" data-name="Быстрые фразы">
+          <div class="ob-stage">
+            <div class="mock s1">
+              <div class="pm">
+                <div class="pm-head"><img class="pm-logo" src="/icons/icon16.png" alt=""><span class="pm-title">Быстрые фразы</span><span class="pm-ic">⚙</span><span class="pm-ic">✕</span></div>
+                <div class="pm-tabs"><span class="pm-tab on">Основные</span><span class="pm-tab">Дополнительные</span></div>
+                <div class="pm-search">Поиск фраз…</div>
+                <div class="pm-cat"><span class="pm-dot" style="--c:#4dabf7"></span>База <span class="pm-chev">⌄</span></div>
+                <div class="pm-list">
+                  <div class="pm-row pick">Простите за долгое ожидание ответа. Сейчас нам поступает большое количество обращений…</div>
+                  <div class="pm-row">Дальнейшее решение вопроса возможно только по телефону. Я вам позвоню.</div>
+                  <div class="pm-row">Не получили от вас ответа. Если вопрос ещё актуален — напишите нам снова.</div>
+                </div>
+              </div>
+              <div class="s1-field"><span class="s1-inserted">Простите за долгое ожидание ответа…</span></div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-step"></div>
+            <h2>Быстрые фразы</h2>
+            <p>Библиотека готовых ответов по категориям. Открыл меню, выбрал фразу — она вставилась в поле ввода. Категориям можно задать свой цвет, а порядок менять перетаскиванием.</p>
+            <div class="ob-how"><span>Вызов:</span><kbd class="js-hotkey">Alt + A</kbd><span class="ob-or">или</span><kbd>ПКМ по полю</kbd></div>
+          </div>
+        </section>
+
+        <!-- ═══ 2 · Умные подсказки ═══ -->
+        <section class="ob-slide" data-name="Подсказки">
+          <div class="ob-stage">
+            <div class="mock s2">
+              <div class="mc-msg mc-in">Когда уже будет наконец-то ответ?</div>
+              <div class="mc-msg mc-in mc-in2">Жду больше часа, это нормально вообще?</div>
+              <div class="mc-msg mc-out">Здравствуйте! Меня зовут Алексей, сейчас разберёмся.</div>
+              <div class="mc-msg mc-in mc-in3">Хорошо, жду. Только побыстрее, пожалуйста.</div>
+              <div class="hn-pop">
+                <div class="hn-row"><span class="hn-text">Ознакомились с вашим обращением…</span><span class="hn-tab">Tab</span></div>
+              </div>
+              <div class="s2-field"><span class="hn-typed">Ознакомились с вашим</span><span class="mc-caret hn-ca"></span><span class="hn-rest"> обращением</span><span class="mc-caret hn-cb"></span></div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-step"></div>
+            <h2>Умные подсказки</h2>
+            <p>Начни печатать — T-Helper на лету предложит подходящую фразу над полем и допишет остальное. Панель матовая, так что не перекрывает переписку.</p>
+            <div class="ob-how"><span>Вставить:</span><kbd>Tab</kbd><span class="ob-or">выбор</span><kbd>↑ ↓</kbd><span class="ob-or">по умолчанию</span><kbd>только Творк</kbd></div>
+          </div>
+        </section>
+
+        <!-- ═══ 3 · Добавить из текста ═══ -->
+        <section class="ob-slide" data-name="Добавить фразу">
+          <div class="ob-stage">
+            <div class="mock s3">
+              <div class="mc-msg mc-in ad-src">Спасибо за терпение! <span class="ad-sel">Рад был помочь вам сегодня</span> 🙂</div>
+              <div class="ad-ctx">
+                <div class="ad-ctx-row ad-ctx-dim">Копировать</div>
+                <div class="ad-ctx-row ad-ctx-hot">➕ Добавить в «Быстрые фразы»</div>
+              </div>
+              <svg class="ad-cursor" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 2l15 9-6.2 1.3L16 20l-2.7 1.1-3.1-7.4L4 18z" fill="#fff" stroke="#000" stroke-width="1.1" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-step"></div>
+            <h2>Добавить фразу из текста</h2>
+            <p>Получился удачный ответ? Выдели текст, правой кнопкой — «Добавить», и он сохранится в твою категорию. Или создай новую прямо оттуда.</p>
+            <div class="ob-how"><span>Вызов:</span><kbd>Выделить → ПКМ</kbd></div>
+          </div>
+        </section>
+
+        <!-- ═══ 4 · Заметки ═══ -->
+        <section class="ob-slide" data-name="Заметки">
+          <div class="ob-stage">
+            <div class="mock s4">
+              <div class="nt-page"><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="nt-rail">
+                <div class="nt-tab nt-tab-temp" style="--c:#FFD000">
+                  <span class="nt-ti"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg></span>
+                </div>
+                <div class="nt-tab" style="--c:#4dabf7"><span class="nt-ti"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 4.5h6a2.5 2.5 0 0 1 2 2.5v12a2 2 0 0 0-2-1.5H4Z"/><path d="M20 4.5h-6a2.5 2.5 0 0 0-2 2.5v12a2 2 0 0 1 2-1.5h6Z"/></svg></span></div>
+                <div class="nt-tab" style="--c:#51cf66"><span class="nt-ti"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3.2l7 2.8v5.4c0 4.2-2.9 7.6-7 9.4-4.1-1.8-7-5.2-7-9.4V6Z"/></svg></span></div>
+              </div>
+              <div class="nt-win">
+                <div class="nt-head"><span class="nt-bar"></span><span class="nt-title">Черновик</span><span class="nt-hb"></span><span class="nt-hb"></span></div>
+                <div class="nt-body">
+                  <div class="nt-line">Клиент ждёт ответ по заявке</div>
+                  <ul class="nt-ul"><li>уточнить сроки</li><li>перезвонить после 15:00</li></ul>
+                  <div class="nt-callout">Проверить статус перед закрытием</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-step"></div>
+            <h2>Заметки</h2>
+            <p>Язычки у края экрана: потянул — открылась заметка. Своё оформление, значок и цвет, списки и выноски. Окна перетаскиваются и меняют размер.</p>
+            <div class="ob-how"><span>Первая заметка</span><kbd>временная</kbd><span class="ob-or">очищается при закрытии обращения</span></div>
+          </div>
+        </section>
+
+        <!-- ═══ 5 · Блюр данных ═══ -->
+        <section class="ob-slide" data-name="Блюр данных">
+          <div class="ob-stage">
+            <div class="mock s5">
+              <div class="bl-card">
+                <div class="bl-row"><span class="bl-k">Клиент</span><span class="bl-v">Иванов Иван Иванович</span></div>
+                <div class="bl-row"><span class="bl-k">Телефон</span><span class="bl-v">+7 900 000-00-00</span></div>
+                <div class="bl-row"><span class="bl-k">Обращение</span><span class="bl-v">№ 1234567</span></div>
+                <div class="bl-row"><span class="bl-k">Почта</span><span class="bl-v">client@example.com</span></div>
+              </div>
+              <div class="bl-key"><kbd class="js-hotkey-blur">Alt + B</kbd></div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-step"></div>
+            <h2>Блюр данных</h2>
+            <p>Одна клавиша закрывает ФИО, телефон, почту и номер обращения — во всех вкладках сразу. Нужно, когда рядом кто-то есть, идёт демонстрация экрана или запись.</p>
+            <div class="ob-how"><span>Вызов:</span><kbd class="js-hotkey-blur">Alt + B</kbd><span class="ob-or">ответственность за данные всё равно на тебе</span></div>
+          </div>
+        </section>
+
+        <!-- ═══ 6 · Расписание ═══ -->
+        <section class="ob-slide" data-name="Расписание">
+          <div class="ob-stage">
+            <div class="mock mock-panel s6">
+              <div class="sc-head"><img class="pm-logo" src="/icons/icon16.png" alt=""><span class="sc-htitle">Расписание</span><span class="pm-ic">⌃</span><span class="pm-ic">⚙</span><span class="pm-ic">✕</span></div>
+              <div class="sc-now">
+                <div class="sc-name">Вход. звонки</div>
+                <div class="sc-meta">до 23:45 · осталось <span class="sc-left">16 мин</span></div>
+                <div class="sc-next">Далее: Перерыв · 23:45</div>
+              </div>
+              <div class="sc-list">
+                <div class="sc-row past"><span class="sc-t">20:00</span><span>Обед</span></div>
+                <div class="sc-row past"><span class="sc-t">20:40</span><span>Вход. звонки</span></div>
+                <div class="sc-row past"><span class="sc-t">22:30</span><span>Свободное время</span></div>
+                <div class="sc-row now"><span class="sc-t">22:40</span><span>Вход. звонки</span></div>
+                <div class="sc-row"><span class="sc-t">23:45</span><span>Перерыв</span></div>
+                <div class="sc-row"><span class="sc-t">23:55</span><span>Вход. звонки</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="ob-copy">
+            <div class="ob-step"></div>
+            <h2>Виджет расписания</h2>
+            <p>Текущий режим, сколько осталось до следующего и звук при смене. Данные берутся из твоего графика в Творке. Сворачивается в компактную полоску — она помнит свою ширину и место.</p>
+            <div class="ob-how"><span>Появится:</span><kbd>на странице графика</kbd></div>
+          </div>
+        </section>
+
+        <!-- ═══ 7 · Остальное ═══ -->
+        <section class="ob-slide ob-slide-grid" data-name="И ещё">
+          <div class="ob-copy ob-copy-wide">
+            <div class="ob-step"></div>
+            <h2>Что ещё внутри</h2>
+            <p>Это живёт в окне расширения — там же тумблеры модулей и все настройки.</p>
+            <div class="ob-grid">
+              <div class="ob-card">
+                <span class="ob-card-ic">✅</span>
+                <b>Чек-лист</b>
+                <span>Плавающий список с вкладками под разные сценарии. Открывается из окна расширения.</span>
+              </div>
+              <div class="ob-card">
+                <span class="ob-card-ic">⏱️</span>
+                <b>Таймер для ВЗ</b>
+                <span>Считает ожидание клиента на видеозвонке и подаёт сигнал после 1:30. Только на homeagents.</span>
+              </div>
+              <div class="ob-card">
+                <span class="ob-card-ic">🎨</span>
+                <b>Две темы</b>
+                <span>Тёмная и белая — разом для всех меню, виджетов и заметок. Переключатель сверху справа.</span>
+              </div>
+              <div class="ob-card">
+                <span class="ob-card-ic">💾</span>
+                <b>Резервная копия</b>
+                <span>Настройки и фразы сохраняются одним файлом, заметки — отдельным. Файл с заметками содержит рабочий текст, не отправляй его посторонним.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <footer class="ob-nav">
+      <button class="ob-arrow" id="ob-prev" type="button" aria-label="Назад">‹ Назад</button>
+      <div class="ob-dots" id="ob-dots" role="tablist" aria-label="Разделы знакомства"></div>
+      <button class="ob-arrow ob-next" id="ob-next" type="button">Далее ›</button>
+      <button class="ob-btn" id="ob-start" type="button" hidden>Начать работу</button>
+    </footer>
+  </div>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>

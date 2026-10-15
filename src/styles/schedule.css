@@ -1,0 +1,348 @@
+/* ══════════════════════════════════════════
+   T-Helper · Schedule widget (TWFM)
+   ══════════════════════════════════════════ */
+
+/* ── Дизайн-токены тем (база = тёмная) ──
+   Токены задаются и на виджете, и на кнопке
+   повторного открытия (она — отдельный элемент). */
+#twfm-widget, #twfm-reopen {
+  --th-bg:          #0D0D0F;
+  --th-head-bg:     #17171A;
+  --th-text:        #EDEDEF;
+  --th-text-rgb:    237,237,239;
+  --th-accent:      #FFD600;
+  --th-accent-rgb:  255,214,0;
+  --th-surface-rgb: 255,255,255;
+  --th-shadow:      0 16px 48px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
+  /* акцентная заливка (кнопки/выделения) — в белой теме градиент */
+  --th-fill-bg:        linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%);
+  --th-fill-bg-hover:  linear-gradient(180deg, #FFE75C 0%, #FFDC28 100%);
+  --th-fill-border:    transparent;
+  --th-fill-fg:        #1B1C1D;
+  --th-fill-shadow:    none;
+  /* нейтральная подсветка управляющих кнопок (шестерёнка настроек) */
+  --th-ctrl-bg:        rgba(var(--th-surface-rgb), 0.12);
+  --th-ctrl-bg-hover:  rgba(var(--th-surface-rgb), 0.18);
+  --th-ctrl-fg:        var(--th-text);
+  /* опасное действие (закрыть / удалить) */
+  --th-danger-bg:      rgba(255,80,80,0.2);
+  --th-danger-bg-soft: rgba(255,80,80,0.18);
+  --th-danger-fg:      rgb(255,120,120);
+  --th-danger-border:  rgba(255,80,80,0.25);
+}
+#twfm-widget[data-theme="white"], #twfm-reopen[data-theme="white"] {
+  --th-bg:          #FFFFFF;
+  --th-head-bg:     #F6F6F8;
+  --th-text:        #1B1C1D;
+  --th-text-rgb:    27,28,29;
+  --th-accent:      #1B1C1D;
+  --th-accent-rgb:  255,214,0;
+  --th-surface-rgb: 0,0,0;
+  --th-shadow:      0 16px 48px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.05);
+  --th-fill-bg:        linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%);
+  --th-fill-bg-hover:  linear-gradient(180deg, #FFE75C 0%, #FFDC28 100%);
+  --th-fill-border:    transparent;
+  --th-fill-fg:        #1B1C1D;
+  --th-fill-shadow:    none;
+  --th-ctrl-bg:        rgba(var(--th-surface-rgb), 0.07);
+  --th-ctrl-bg-hover:  rgba(var(--th-surface-rgb), 0.13);
+  --th-ctrl-fg:        var(--th-text);
+  --th-danger-bg:      rgba(200,50,50,0.1);
+  --th-danger-bg-soft: rgba(180,50,50,0.1);
+  --th-danger-fg:      rgb(180,60,60);
+  --th-danger-border:  rgba(180,50,50,0.2);
+}
+
+#twfm-widget {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 2147483646;
+  width: 268px;
+  font-family: 'Onest', system-ui, -apple-system, sans-serif;
+  background: var(--th-bg);
+  border: 1px solid rgba(var(--th-surface-rgb), 0.12);
+  border-radius: 13px;
+  box-shadow: var(--th-shadow);
+  overflow: hidden;
+  color: var(--th-text);
+  animation: twfm-pop 0.2s cubic-bezier(0.34,1.46,0.64,1);
+  transition: opacity 0.5s ease;
+  user-select: none;
+}
+/* Interacting with the widget → fully opaque */
+#twfm-widget:hover,
+#twfm-widget:focus-within {
+  opacity: 1 !important;
+  transition: opacity 0.15s ease;
+}
+/* Flash: override opacity inline style for 1.2s on mode change */
+#twfm-widget.twfm-flash {
+  opacity: 1 !important;
+  transition: none;
+}
+
+@keyframes twfm-pop {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Header ── */
+.twfm-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 12px;
+  background: var(--th-head-bg);
+  border-bottom: 1px solid rgba(var(--th-surface-rgb), 0.08);
+  cursor: grab;
+}
+.twfm-head:active { cursor: grabbing; }
+/* Подмена «логотип + Расписание» на значок происходит при перерисовке
+   шапки, поэтому переход не анимируется сам — проигрываем одноразовую
+   анимацию проявления, чтобы смена читалась как плавная, а не как рывок. */
+.twfm-title-swap { animation: twfm-title-swap 0.34s cubic-bezier(0.32, 0.72, 0, 1); }
+@keyframes twfm-title-swap {
+  from { opacity: 0; transform: scale(0.82); filter: blur(2px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+/* Жёлтый значок на белом фоне почти сливается — даём ему тёмный контур
+   тенью по четырём направлениям, чтобы форма читалась в обеих темах. */
+#twfm-widget[data-theme="white"] .twfm-title svg {
+  filter: drop-shadow(0 0 0.6px rgba(0, 0, 0, 0.55)) drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.3));
+}
+.twfm-title { font-size: 13px; font-weight: 600; color: var(--th-accent); pointer-events: none; display: inline-flex; align-items: center; gap: 6px; }
+#twfm-widget[data-theme="white"] .twfm-title { color: var(--th-text); }
+.twfm-head-btns { display: flex; align-items: center; gap: 4px; cursor: default; }
+.twfm-icon-btn {
+  background: none; border: none;
+  color: rgba(var(--th-text-rgb), 0.4);
+  width: 24px; height: 24px; border-radius: 6px;
+  cursor: pointer; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, color 0.12s; padding: 0;
+}
+.twfm-icon-btn:hover { background: rgba(var(--th-surface-rgb), 0.12); color: var(--th-accent); }
+#twfm-close:hover { background: var(--th-danger-bg); color: var(--th-danger-fg); }
+/* settings gear: neutral highlight (accent-tinted in light themes) */
+#twfm-settings-btn:hover { background: var(--th-ctrl-bg); color: var(--th-ctrl-fg); }
+#twfm-settings-btn.active { background: var(--th-ctrl-bg); color: var(--th-ctrl-fg); }
+#twfm-settings-btn.active:hover { background: var(--th-ctrl-bg-hover); color: var(--th-ctrl-fg); }
+/* one-shot gear spin on click */
+.twfm-icon-btn.twfm-spin svg { animation: twfm-spin 0.4s cubic-bezier(0.4,0,0.2,1); }
+@keyframes twfm-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(180deg); }
+}
+/* slide-in reveal for full list / settings panel */
+.twfm-slidein { animation: twfm-slidein 0.22s cubic-bezier(0.4,0,0.2,1); }
+@keyframes twfm-slidein {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* slide-out collapse for full list / settings panel */
+.twfm-slideout { animation: twfm-slideout 0.18s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes twfm-slideout {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-5px); }
+}
+/* smooth collapse / expand (compact + full list) — same feel as the checklist panel */
+#twfm-widget.twfm-anim {
+  transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
+              height 0.28s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.15s ease;
+}
+/* close — fade + shrink up before removal */
+#twfm-widget.twfm-closing {
+  animation: twfm-close 0.19s cubic-bezier(0.4,0,1,1) forwards;
+  pointer-events: none;
+}
+@keyframes twfm-close {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-8px) scale(0.96); }
+}
+
+/* ── Prompt mode ── */
+.twfm-prompt-body { padding: 14px 14px 16px; }
+.twfm-prompt-q {
+  font-size: 13px; color: rgba(var(--th-text-rgb), 0.85);
+  text-align: center; margin-bottom: 12px;
+}
+.twfm-prompt-btns { display: flex; gap: 8px; }
+.twfm-hint-img {
+  margin: 0 0 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--th-surface-rgb), 0.12);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  line-height: 0;
+}
+.twfm-hint-img svg { display: block; border-radius: 12px; }
+.twfm-btn {
+  flex: 1; border-radius: 8px; padding: 8px 0;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s; border: 1px solid transparent;
+}
+.twfm-btn-yes {
+  background: var(--th-fill-bg); color: var(--th-fill-fg);
+  border-color: var(--th-fill-border); text-shadow: var(--th-fill-shadow);
+}
+.twfm-btn-yes:hover { background: var(--th-fill-bg-hover); }
+.twfm-btn-full { width: 100%; flex: none; }
+.twfm-btn-no {
+  background: rgba(var(--th-surface-rgb), 0.05); color: rgba(var(--th-text-rgb), 0.6);
+  border-color: rgba(var(--th-surface-rgb), 0.12);
+}
+.twfm-btn-no:hover { background: rgba(var(--th-surface-rgb), 0.1); color: rgba(var(--th-text-rgb), 0.9); }
+
+/* ── Tracker mode ── */
+.twfm-now { padding: 12px 14px; }
+.twfm-now-name {
+  font-size: 15px; font-weight: 600; color: var(--th-text);
+  margin-bottom: 4px; line-height: 1.3;
+}
+.twfm-now-meta {
+  font-size: 12px; color: var(--th-accent);
+  margin-bottom: 6px;
+}
+.twfm-next {
+  font-size: 12px; color: rgba(var(--th-text-rgb), 0.5);
+  padding-top: 6px; border-top: 1px solid rgba(var(--th-surface-rgb), 0.06);
+}
+
+/* ── Full schedule list ── */
+.twfm-full {
+  max-height: 280px; overflow-y: auto;
+  border-top: 1px solid rgba(var(--th-surface-rgb), 0.07);
+  padding: 6px 0;
+}
+.twfm-full.twfm-hidden { display: none; }
+.twfm-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 14px;
+  font-size: 12px; color: rgba(var(--th-text-rgb), 0.7);
+}
+.twfm-row-time {
+  color: rgba(var(--th-text-rgb), 0.45);
+  font-variant-numeric: tabular-nums; min-width: 38px;
+}
+.twfm-row-text { flex: 1; }
+.twfm-row-active { background: color-mix(in srgb, var(--twfm-accent, #FFD600) 14%, transparent); }
+.twfm-row-active .twfm-row-text { color: var(--twfm-accent, #FFD600); font-weight: 600; }
+.twfm-row-active .twfm-row-time { color: var(--twfm-accent, #FFD600); }
+.twfm-row-past { opacity: 0.4; }
+.twfm-full::-webkit-scrollbar { width: 6px; }
+.twfm-full::-webkit-scrollbar-thumb {
+  background: rgba(var(--th-surface-rgb), 0.15); border-radius: 3px;
+}
+
+/* ── Settings panel ── */
+.twfm-settings {
+  border-top: 1px solid rgba(var(--th-surface-rgb), 0.07);
+  padding: 10px 14px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.twfm-settings.twfm-hidden { display: none; }
+.twfm-srow {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; font-size: 12px; color: rgba(var(--th-text-rgb), 0.65);
+  cursor: default;
+}
+.twfm-srow-right { display: flex; align-items: center; gap: 6px; }
+.twfm-srow input[type="checkbox"] { cursor: pointer; accent-color: var(--th-accent); width: 16px; height: 16px; }
+.twfm-srow input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100px; height: 4px; border-radius: 2px;
+  background: rgba(var(--th-surface-rgb), 0.15); cursor: pointer; outline: none;
+}
+.twfm-srow input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--th-accent); cursor: pointer;
+}
+#twfm-opacity-val { font-size: 11px; color: rgba(var(--th-text-rgb), 0.45); min-width: 32px; text-align: right; }
+
+/* segmented scope control */
+.twfm-seg {
+  display: flex; gap: 0;
+  background: rgba(var(--th-surface-rgb), 0.06);
+  border: 1px solid rgba(var(--th-surface-rgb), 0.1);
+  border-radius: 7px; overflow: hidden;
+}
+.twfm-seg-btn {
+  border: none; background: none; cursor: pointer;
+  font-family: inherit; font-size: 11px; font-weight: 500;
+  color: rgba(var(--th-text-rgb), 0.55);
+  padding: 5px 9px; transition: background 0.12s, color 0.12s;
+}
+.twfm-seg-btn:hover { color: var(--th-text); }
+.twfm-seg-btn.active { background: var(--th-fill-bg); color: var(--th-fill-fg); text-shadow: var(--th-fill-shadow); }
+
+/* delete / reload buttons */
+.twfm-sbtns { display: flex; gap: 6px; }
+.twfm-sbtn {
+  flex: 1; border: 1px solid rgba(var(--th-surface-rgb), 0.12); border-radius: 7px;
+  background: rgba(var(--th-surface-rgb), 0.05); color: rgba(var(--th-text-rgb), 0.65);
+  font-family: inherit; font-size: 11px; font-weight: 500;
+  padding: 7px 4px; cursor: pointer; transition: all 0.12s;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.twfm-sbtn:hover { background: rgba(var(--th-surface-rgb), 0.1); color: var(--th-text); }
+.twfm-sbtn-del { color: var(--th-danger-fg); border-color: var(--th-danger-border); }
+.twfm-sbtn-del:hover { background: var(--th-danger-bg-soft); color: var(--th-danger-fg); }
+
+/* ── Compact mode ── */
+/* Компактный режим освободил место, поэтому виджет больше не растягивается:
+   сворачивание меняет высоту, а ширина остаётся прежней. */
+#twfm-widget.twfm-compact { width: 268px; }
+.twfm-compact-bar { min-width: 0; }
+.twfm-compact-name, .twfm-compact-meta { overflow: hidden; text-overflow: ellipsis; }
+.twfm-compact-bar {
+  flex: 1; display: flex; align-items: baseline; gap: 8px;
+  overflow: hidden; min-width: 0;
+  padding: 0 2px 0 9px;
+  margin-left: 6px;
+  border-left: 1px solid rgba(var(--th-text-rgb), 0.4);
+}
+/* name keeps its space; the meta yields first so the mode name isn't cut */
+.twfm-compact-name {
+  font-size: 13px; font-weight: 600; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+  flex: 0 1 auto; min-width: 0;
+}
+.twfm-compact-meta {
+  font-size: 11px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; opacity: 0.8;
+  flex: 0 100 auto; min-width: 0;
+}
+
+/* ── Reopen button ── */
+#twfm-reopen {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2147483646;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--th-bg);
+  border: 1px solid rgba(var(--th-surface-rgb), 0.15);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  color: var(--th-text); font-size: 18px;
+  cursor: pointer;
+  display: none; align-items: center; justify-content: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+  animation: twfm-pop 0.2s cubic-bezier(0.34,1.46,0.64,1);
+}
+#twfm-reopen:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+/* Кнопка загрузки на время ожидания */
+.twfm-btn.twfm-loading {
+  pointer-events: none;
+  opacity: 0;
+  max-height: 0;
+  padding-top: 0; padding-bottom: 0;
+  margin: 0; border-width: 0;
+  overflow: hidden;
+  transition: opacity 0.16s ease, max-height 0.24s cubic-bezier(0.32, 0.72, 0, 1),
+              padding 0.24s, margin 0.24s;
+}

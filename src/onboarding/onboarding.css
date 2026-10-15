@@ -1,0 +1,436 @@
+/* ══════════════════════════════════════════════════════════
+   T-Helper · знакомство
+   Токены повторяют расширение один-в-один (см. src/styles/menu.css):
+   тем ровно две, база тёмной — #0D0D0F / #17171A / #212126.
+   Правило по жёлтому оттуда же: он бывает только сплошным.
+   Жёлтая заливка низкой прозрачностью поверх серого уходит в
+   оливковый, поэтому подложки (--wash) нейтральные, а акцент
+   держат сплошная полоска (--pick) и тонкая рамка.
+   ══════════════════════════════════════════════════════════ */
+:root {
+  --bg:      #0D0D0F;
+  --panel:   #17171A;
+  --raised:  #212126;
+  --line:    rgba(255,255,255,0.08);
+  --text:    #EDEDEF;
+  --muted:   rgba(237,237,239,0.52);
+  --faint:   rgba(237,237,239,0.3);
+  --surface-rgb: 255,255,255;
+  --accent:  #FFD600;              /* акцентный «текстовый» цвет */
+  --accent-rgb: 255,214,0;
+  --wash:    rgba(255,255,255,0.07); /* нейтральная подложка выделения */
+  --glow:    rgba(255,214,0,0.09);   /* тёплый ореол страницы */
+  --pick:    #FFD600;                /* полоска у выбранного элемента */
+  --fill-bg: linear-gradient(180deg, #FFDE3D 0%, #FFD000 100%);
+  --fill-fg: #1B1C1D;
+  --blue:    #74b9ff;
+  --in:      #2A2A30;              /* входящее сообщение в макете чата */
+  --glass:   rgba(28,28,32,0.62);
+  --glass-edge: rgba(255,255,255,0.16);
+  --shadow:  0 30px 90px rgba(0,0,0,0.5);
+  --shadow-mock: 0 18px 50px rgba(0,0,0,0.45);
+  /* Сильные кривые: встроенные ease слишком вялые на коротких дистанциях */
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+:root[data-theme="white"] {
+  --bg:      #E6E6EC;
+  --panel:   #FFFFFF;
+  --raised:  #EFEFF3;
+  --line:    rgba(0,0,0,0.09);
+  --text:    #1B1C1D;
+  --muted:   rgba(27,28,29,0.55);
+  --faint:   rgba(27,28,29,0.32);
+  --surface-rgb: 0,0,0;
+  --accent:  #1B1C1D;
+  --wash:    rgba(0,0,0,0.05);
+  --glow:    rgba(27,28,29,0.045);
+  --pick:    #1B1C1D;
+  --blue:    #2b7fd4;
+  --in:      #DEDEE6;
+  --glass:   rgba(255,255,255,0.68);
+  --glass-edge: rgba(255,255,255,0.9);
+  --shadow:  0 30px 90px rgba(0,0,0,0.14);
+  --shadow-mock: 0 18px 50px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Onest', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: radial-gradient(1100px 560px at 50% -10%, var(--glow), transparent 60%), var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  /* смена темы — заметный скачок яркости во весь экран, смягчаем */
+  transition: background-color 0.3s ease;
+}
+
+/* ── Каркас ────────────────────────────────────────── */
+.ob-shell {
+  width: 100%; max-width: 960px;
+  background: var(--panel);
+  border: 1px solid var(--line); border-radius: 22px;
+  box-shadow: var(--shadow);
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.ob-top { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-bottom: 1px solid var(--line); }
+.ob-logo { width: 26px; height: 26px; border-radius: 7px; }
+.ob-brand { font-weight: 700; letter-spacing: -0.01em; }
+
+/* Переключатель собран так же, как в попапе: обе иконки лежат друг на
+   друге и меняются прозрачностью с поворотом. Показывать/прятать их
+   через display нельзя — общее правило для svg перебивает по
+   специфичности, и в тёмной теме видны сразу обе. */
+.ob-theme {
+  position: relative;
+  margin-left: auto;
+  width: 30px; height: 30px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border: none; border-radius: 9px; cursor: pointer;
+  color: var(--text); background: rgba(var(--surface-rgb), 0.08);
+  transition: background 0.15s ease, transform 0.14s var(--ease-out);
+}
+.ob-theme:hover { background: rgba(var(--surface-rgb), 0.15); }
+.ob-theme:active { transform: scale(0.94); }
+.ob-theme:focus-visible { outline: 2px solid var(--pick); outline-offset: 2px; }
+.ob-theme svg {
+  position: absolute; width: 15px; height: 15px; display: block;
+  transition: opacity 0.26s var(--ease-out), transform 0.34s var(--ease-out);
+}
+/* уходящая иконка отворачивается и уменьшается, приходящая — наоборот */
+.ob-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+.ob-moon { opacity: 0; transform: rotate(-70deg) scale(0.5); }
+:root[data-theme="white"] .ob-sun  { opacity: 0; transform: rotate(70deg) scale(0.5); }
+:root[data-theme="white"] .ob-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+
+.ob-skip { background: none; border: none; cursor: pointer; color: var(--muted); font-family: inherit; font-size: 13px; padding: 6px 10px; border-radius: 8px; transition: color 0.15s ease, background 0.15s ease, transform 0.14s var(--ease-out); }
+.ob-skip:hover { color: var(--text); background: rgba(var(--surface-rgb), 0.06); }
+.ob-skip:active { transform: scale(0.97); }
+
+.ob-hero { text-align: center; padding: 18px 22px 4px; }
+.ob-hero h1 { font-size: 22px; font-weight: 700; margin: 0 0 5px; letter-spacing: -0.02em; line-height: 1.15; }
+.ob-hero h1 span { color: var(--accent); }
+.ob-hero p { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* ── Карусель ──────────────────────────────────────── */
+.ob-viewport { overflow: hidden; }
+.ob-track { display: flex; transition: transform 0.42s var(--ease-out); }
+.ob-slide { flex: 0 0 100%; display: flex; align-items: center; gap: 28px; padding: 22px 40px 30px; }
+.ob-stage { flex: 0 0 auto; width: 372px; height: 300px; display: flex; align-items: center; justify-content: center; }
+.ob-copy { flex: 1; min-width: 0; }
+.ob-step { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.ob-copy h2 { font-size: 24px; font-weight: 700; margin: 0 0 12px; letter-spacing: -0.02em; line-height: 1.15; }
+.ob-copy p { font-size: 14.5px; line-height: 1.55; color: var(--muted); margin: 0 0 18px; }
+.ob-how { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 12.5px; color: var(--muted); }
+.ob-or { opacity: 0.65; }
+kbd { font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text); background: rgba(var(--surface-rgb), 0.08); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 7px; padding: 3px 9px; white-space: nowrap; }
+
+/* Текст въезжает лесенкой — знакомство смотрят один раз,
+   здесь такая мелочь уместна, в рабочих меню была бы шумом. */
+.ob-slide.active .ob-step,
+.ob-slide.active .ob-copy h2,
+.ob-slide.active .ob-copy p,
+.ob-slide.active .ob-how,
+.ob-slide.active .ob-grid { animation: ob-rise 0.42s var(--ease-out) both; }
+.ob-slide.active .ob-copy h2 { animation-delay: 0.04s; }
+.ob-slide.active .ob-copy p  { animation-delay: 0.08s; }
+.ob-slide.active .ob-how,
+.ob-slide.active .ob-grid    { animation-delay: 0.12s; }
+@keyframes ob-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Седьмая карточка: сетка вместо макета ─────────── */
+.ob-slide-grid { padding: 24px 40px 30px; }
+.ob-copy-wide { flex: 1; }
+.ob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ob-card {
+  display: grid; grid-template-columns: 26px 1fr; grid-template-rows: auto auto;
+  column-gap: 10px; row-gap: 3px; align-items: start;
+  padding: 13px 14px; border-radius: 13px;
+  background: var(--raised); border: 1px solid var(--line);
+}
+.ob-card-ic { grid-row: 1 / 3; font-size: 18px; line-height: 1; }
+.ob-card b { font-size: 13.5px; font-weight: 600; }
+.ob-card span:last-child { font-size: 12px; line-height: 1.45; color: var(--muted); }
+
+/* ── Навигация ─────────────────────────────────────── */
+.ob-nav { display: flex; align-items: center; gap: 14px; padding: 14px 22px; border-top: 1px solid var(--line); }
+.ob-arrow { font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text); background: rgba(var(--surface-rgb), 0.06); border: 1px solid var(--line); border-radius: 10px; padding: 9px 16px; transition: background 0.15s ease, opacity 0.15s ease, transform 0.14s var(--ease-out); }
+.ob-arrow:hover { background: rgba(var(--surface-rgb), 0.12); }
+.ob-arrow:active { transform: scale(0.97); }
+.ob-arrow:disabled { opacity: 0.3; cursor: default; }
+.ob-next { margin-left: auto; background: var(--fill-bg); border-color: transparent; color: var(--fill-fg); }
+.ob-next:hover { background: var(--fill-bg); filter: brightness(1.06); }
+.ob-dots { display: flex; gap: 7px; margin: 0 auto; }
+.ob-dot { width: 7px; height: 7px; padding: 0; border: none; border-radius: 50%; background: rgba(var(--surface-rgb), 0.22); cursor: pointer; transition: background 0.2s ease, transform 0.2s var(--ease-out); }
+.ob-dot:hover { background: rgba(var(--surface-rgb), 0.4); }
+.ob-dot.on { background: var(--accent); transform: scale(1.3); }
+.ob-btn { margin-left: auto; font-family: inherit; font-size: 14px; font-weight: 700; color: var(--fill-fg); background: var(--fill-bg); border: none; border-radius: 11px; padding: 11px 28px; cursor: pointer; box-shadow: 0 8px 24px rgba(255,214,0,0.28); transition: transform 0.14s var(--ease-out), filter 0.14s ease; }
+.ob-btn:hover { filter: brightness(1.05); }
+.ob-btn:active { transform: scale(0.97); }
+.ob-bye { margin: 0 auto; text-align: center; display: flex; flex-direction: column; gap: 4px; animation: ob-rise 0.35s var(--ease-out) both; }
+.ob-bye-title { font-size: 16px; font-weight: 700; color: var(--accent); }
+.ob-bye-timer { font-size: 12.5px; color: var(--muted); }
+.ob-bye-timer b { color: var(--text); }
+
+/* ── Общая основа макетов ──────────────────────────── */
+/* Макет — это «страница» под расширением, поэтому он берёт глубокий
+   фон, а окна и панели внутри лежат слоем выше. Тот же порядок
+   глубины, что и в самом расширении: bg → panel → raised. */
+.mock { position: relative; width: 336px; height: 292px; border-radius: 15px; background: var(--bg); border: 1px solid var(--line); box-shadow: var(--shadow-mock); overflow: hidden; }
+.pm-logo { width: 16px; height: 16px; border-radius: 4px; flex: 0 0 auto; object-fit: cover; display: block; }
+.mc-caret { width: 1.5px; height: 14px; background: var(--accent); flex: 0 0 auto; animation: ob-blink 1s steps(1) infinite; }
+@keyframes ob-blink { 50% { opacity: 0; } }
+.mc-msg { max-width: 84%; padding: 9px 12px; border-radius: 13px; font-size: 12px; line-height: 1.4; background: var(--in); border-bottom-left-radius: 4px; }
+/* Виджет-панель (расписание) — сама по себе окно, а не страница */
+.mock-panel { padding: 0; background: var(--panel); }
+
+/* Стартовые (скрытые) состояния живут только там, где анимации
+   разрешены. При prefers-reduced-motion макет обязан показывать
+   конечный, осмысленный кадр — иначе он выглядел бы пустым. */
+@media (prefers-reduced-motion: no-preference) {
+  .hn-pop, .ad-ctx, .nt-win { opacity: 0; }
+  .hn-typed { clip-path: inset(0 100% 0 0); }
+  .s1-inserted { opacity: 0; }
+  .ad-sel { background-size: 0% 100%; }
+  .bl-v::after { transform: scaleX(0); }
+}
+
+/* ══════════════ 1 · Меню быстрых фраз ══════════════ */
+.s1 { padding: 12px; display: flex; flex-direction: column; gap: 9px; }
+.pm { flex: 1; min-height: 0; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.pm-head { display: flex; align-items: center; gap: 7px; padding: 8px 10px; font-size: 12px; font-weight: 600; }
+.pm-title { flex: 1; }
+.pm-ic { color: var(--faint); font-size: 11px; }
+.pm-tabs { display: flex; gap: 16px; padding: 0 11px; border-bottom: 1px solid var(--line); }
+.pm-tab { padding: 6px 0; font-size: 11px; color: var(--muted); border-bottom: 2px solid transparent; }
+.pm-tab.on { color: var(--accent); border-bottom-color: var(--accent); }
+.pm-search { margin: 8px 10px 6px; padding: 6px 9px; border-radius: 8px; background: rgba(var(--surface-rgb), 0.05); border: 1px solid var(--line); font-size: 10.5px; color: var(--faint); }
+.pm-cat { margin: 0 10px 6px; padding: 6px 9px; border-radius: 8px; background: rgba(var(--surface-rgb), 0.05); border: 1px solid var(--line); font-size: 10.5px; display: flex; align-items: center; gap: 7px; }
+.pm-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: 0 0 auto; }
+.pm-chev { margin-left: auto; color: var(--faint); }
+.pm-list { flex: 1; min-height: 0; overflow: hidden; border-top: 1px solid var(--line); }
+.pm-row { padding: 7px 11px; font-size: 10px; line-height: 1.35; color: var(--muted); border-bottom: 1px solid var(--line); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pm-row.pick { border-left: 2px solid var(--pick); background: var(--wash); color: var(--text); }
+.s1-field { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; padding: 9px 11px; border-radius: 10px; background: rgba(var(--surface-rgb), 0.05); border: 1px solid var(--line); min-height: 34px; }
+.s1-inserted { font-size: 11px; color: var(--text); white-space: nowrap; overflow: hidden; display: inline-block; }
+.ob-slide.active .pm-row.pick  { animation: s1-pick 5s infinite; }
+.ob-slide.active .s1-inserted  { animation: s1-ins  5s infinite; }
+@keyframes s1-pick { 0%,22%{ filter: none } 32%,46%{ filter: brightness(1.45) } 58%,100%{ filter: none } }
+/* фраза появляется целиком, держится, затем «стирается» справа налево */
+@keyframes s1-ins {
+  0%,38% { opacity: 0; clip-path: inset(0 0 0 0); }
+  46%    { opacity: 1; clip-path: inset(0 0 0 0); }
+  80%    { opacity: 1; clip-path: inset(0 0 0 0); }
+  95%    { opacity: 1; clip-path: inset(0 100% 0 0); }
+  100%   { opacity: 0; clip-path: inset(0 0 0 0); }
+}
+
+/* ══════════════ 2 · Подсказки ══════════════ */
+.s2 { padding: 14px; }
+/* Переписка доходит до самой панели: стекло имеет смысл только тогда,
+   когда под ним что-то есть — иначе размывать нечего и «матовость»
+   в кадре не видна. */
+.s2 .mc-in  { position: absolute; top: 14px; left: 14px; }
+.s2 .mc-in2 { position: absolute; top: 56px; left: 14px; }
+.s2 .mc-out { position: absolute; top: 116px; right: 14px; background: var(--raised); border-bottom-left-radius: 13px; border-bottom-right-radius: 4px; }
+.s2 .mc-in3 { position: absolute; top: 176px; left: 14px; }
+.s2-field { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; padding: 9px 11px; border-radius: 10px; background: rgba(var(--surface-rgb), 0.05); border: 1px solid var(--line); min-height: 36px; font-size: 12px; }
+.hn-typed { display: inline-block; white-space: nowrap; }
+.hn-rest  { color: var(--muted); white-space: nowrap; }
+/* матовое стекло: подложка полупрозрачная, фон под ней размывается,
+   верхняя грань подсвечена — так же, как у настоящих подсказок */
+.hn-pop {
+  position: absolute; left: 14px; right: 14px; bottom: 62px; z-index: 3;
+  background: var(--glass);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid var(--line); border-top-color: var(--glass-edge);
+  border-radius: 11px; box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+}
+.hn-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; font-size: 12px; }
+.hn-text { flex: 1; color: var(--accent); }
+.hn-tab { font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: rgba(var(--surface-rgb), 0.1); }
+.hn-cb { opacity: 0; }
+.ob-slide.active .hn-typed { animation: hn-type 5.5s infinite; }
+.ob-slide.active .hn-pop   { animation: hn-pop  5.5s infinite; }
+.ob-slide.active .hn-rest  { animation: hn-rest 5.5s infinite; }
+.ob-slide.active .hn-tab   { animation: hn-tab  5.5s infinite; }
+.ob-slide.active .hn-ca    { animation: hn-ca   5.5s infinite; }
+.ob-slide.active .hn-cb    { animation: hn-cb   5.5s infinite; }
+@keyframes hn-type { 0%{clip-path:inset(0 100% 0 0)} 24%,100%{clip-path:inset(0 0 0 0)} }
+/* стекло «материализуется»: размытие и масштаб вместе, а не просто fade */
+@keyframes hn-pop {
+  0%,26%  { opacity: 0; transform: translateY(10px) scale(0.97); }
+  32%     { opacity: 1; transform: none; }
+  52%     { opacity: 1; transform: none; }
+  60%,100%{ opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+/* дописанный хвост сначала серый, после Tab становится обычным текстом */
+@keyframes hn-rest { 0%,24%{opacity:0} 30%,52%{opacity:1;color:var(--muted)} 58%,94%{opacity:1;color:var(--text)} 100%{opacity:0} }
+@keyframes hn-tab  { 0%,44%{background:rgba(var(--surface-rgb),0.1);color:var(--text)} 48%{background:var(--pick);color:var(--panel);transform:scale(.92)} 54%,100%{background:rgba(var(--surface-rgb),0.1);color:var(--text)} }
+/* каретка стоит после набранного, затем прыгает в конец принятой фразы */
+@keyframes hn-ca { 0%,52%{opacity:1} 55%,100%{opacity:0} }
+@keyframes hn-cb { 0%,54%{opacity:0} 58%,94%{opacity:1} 100%{opacity:0} }
+
+/* ══════════════ 3 · Добавить из текста ══════════════ */
+.s3 { padding: 14px; }
+.s3 .mc-in { position: absolute; top: 20px; left: 16px; right: 16px; max-width: none; }
+.ad-sel { background-image: linear-gradient(var(--wash), var(--wash)); background-size: 0% 100%; background-repeat: no-repeat; border-radius: 3px; padding: 1px 2px; box-shadow: inset 0 -1.5px 0 var(--pick); }
+.ad-ctx { position: absolute; left: 94px; top: 78px; width: 230px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: 0 14px 40px rgba(0,0,0,0.4); z-index: 4; transform-origin: top left; }
+.ad-ctx-row { padding: 9px 11px; font-size: 11px; white-space: nowrap; }
+.ad-ctx-dim { color: var(--muted); border-bottom: 1px solid var(--line); }
+.ad-ctx-hot { color: var(--accent); font-weight: 600; }
+.ad-cursor { position: absolute; left: 250px; top: 34px; z-index: 6; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6)); }
+.ob-slide.active .ad-sel     { animation: ad-sel 6.5s infinite; }
+.ob-slide.active .ad-ctx     { animation: ad-ctx 6.5s infinite; }
+.ob-slide.active .ad-ctx-hot { animation: ad-hot 6.5s infinite; }
+.ob-slide.active .ad-cursor  { animation: ad-cur 6.5s infinite; }
+@keyframes ad-sel { 0%,14%{background-size:0% 100%} 26%,92%{background-size:100% 100%} 100%{background-size:0% 100%} }
+/* меню раскрывается из точки клика, а не из своего центра */
+@keyframes ad-ctx { 0%,30%{opacity:0;transform:scale(0.94)} 36%,90%{opacity:1;transform:none} 100%{opacity:0;transform:scale(0.97)} }
+@keyframes ad-hot { 0%,52%{background:transparent} 58%,74%{background:var(--wash)} 80%,100%{background:transparent} }
+@keyframes ad-cur {
+  0%   { left: 255px; top: 28px; opacity: 0; }
+  8%   { left: 130px; top: 42px; opacity: 1; }   /* приходит к началу выделения */
+  14%  { left: 130px; top: 42px; }               /* начало протяжки */
+  26%  { left: 250px; top: 58px; }               /* тянет до конца фразы */
+  34%  { left: 250px; top: 58px; }               /* правый клик */
+  50%  { left: 180px; top: 126px; }              /* ведёт на «Добавить» */
+  92%  { left: 180px; top: 126px; opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ══════════════ 4 · Заметки ══════════════ */
+.s4 { padding: 0; }
+.nt-page { position: absolute; inset: 18px 70px 18px 16px; display: flex; flex-direction: column; gap: 9px; }
+.nt-page i { height: 7px; border-radius: 4px; background: rgba(var(--surface-rgb), 0.09); }
+.nt-page i:nth-child(2) { width: 76%; }
+.nt-page i:nth-child(4) { width: 61%; }
+.nt-page i:nth-child(5) { width: 84%; }
+/* Рейка язычков прижата к правому краю макета — как к краю экрана */
+.nt-rail { position: absolute; right: 0; top: 34px; display: flex; flex-direction: column; gap: 7px; z-index: 3; }
+.nt-tab {
+  width: 34px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 9px 0 0 9px;
+  background: var(--panel); border: 1px solid var(--line); border-right: none;
+  color: var(--c); box-shadow: -6px 4px 16px rgba(0,0,0,0.25);
+  transform: translateX(7px);
+}
+.nt-ti { display: flex; }
+.nt-win {
+  position: absolute; right: 44px; top: 32px; width: 216px;
+  border-radius: 13px; overflow: hidden;
+  background: var(--panel); border: 1px solid var(--line);
+  box-shadow: 0 18px 44px rgba(0,0,0,0.42);
+  z-index: 4;
+  /* заметка выезжает из своего язычка и туда же уходит */
+  transform-origin: right top;
+}
+.nt-head { display: flex; align-items: center; gap: 7px; padding: 8px 10px; background: var(--raised); border-bottom: 1px solid var(--line); }
+.nt-bar { width: 4px; height: 13px; border-radius: 3px; background: #FFD000; flex: 0 0 auto; }
+.nt-title { flex: 1; min-width: 0; font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nt-hb { width: 11px; height: 11px; border-radius: 3px; background: rgba(var(--surface-rgb), 0.12); flex: 0 0 auto; }
+.nt-body { padding: 10px; font-size: 10.5px; line-height: 1.45; color: var(--muted); }
+.nt-line { margin-bottom: 6px; }
+.nt-ul { list-style: disc outside; margin: 0 0 8px; padding-left: 15px; }
+.nt-ul li::marker { color: #FFD000; }
+.nt-ul li { margin-bottom: 2px; }
+/* Выноска: фиолетовый градиентный значок слева сверху, как в заметках */
+.nt-callout {
+  position: relative; padding: 8px 9px 8px 26px;
+  border-radius: 9px; font-size: 10px; color: var(--text);
+  background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.3);
+}
+.nt-callout::before {
+  content: ''; position: absolute; left: 8px; top: 9px;
+  width: 12px; height: 12px; border-radius: 3px;
+  background: linear-gradient(140deg, #c084fc, #7c3aed);
+}
+.ob-slide.active .nt-tab-temp { animation: nt-tab 6s infinite; }
+.ob-slide.active .nt-win      { animation: nt-win 6s infinite; }
+/* язычок выдвигается — подсказка, что его можно тянуть */
+@keyframes nt-tab { 0%,12%{transform:translateX(7px)} 20%,74%{transform:translateX(0)} 86%,100%{transform:translateX(7px)} }
+@keyframes nt-win {
+  0%,18%  { opacity: 0; transform: translateX(16px) scale(0.94); }
+  28%,74% { opacity: 1; transform: none; }
+  86%,100%{ opacity: 0; transform: translateX(16px) scale(0.94); }
+}
+
+/* ══════════════ 5 · Блюр данных ══════════════ */
+.s5 { padding: 16px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.bl-card { border-radius: 12px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.bl-row { display: flex; align-items: center; gap: 10px; padding: 11px 13px; font-size: 11.5px; border-bottom: 1px solid var(--line); }
+.bl-row:last-child { border-bottom: none; }
+.bl-k { width: 74px; flex: 0 0 auto; color: var(--faint); }
+/* Полоса поверх значения — не размытие самого текста: слабое размытие
+   восстанавливается растяжением контраста, а декоративная полоса не
+   содержит формы букв, и восстанавливать из неё нечего. */
+.bl-v { position: relative; color: var(--text); }
+.bl-v::after {
+  content: ''; position: absolute; left: -3px; right: -3px; top: -2px; bottom: -2px;
+  border-radius: 4px; transform-origin: left center;
+  background:
+    repeating-linear-gradient(115deg, rgba(var(--surface-rgb),0.13) 0 5px, rgba(var(--surface-rgb),0.05) 5px 11px),
+    var(--raised);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.bl-key { display: flex; justify-content: center; }
+.ob-slide.active .bl-v::after { animation: bl-mask 5.5s infinite; }
+.ob-slide.active .bl-row:nth-child(2) .bl-v::after { animation-delay: 0.05s; }
+.ob-slide.active .bl-row:nth-child(3) .bl-v::after { animation-delay: 0.1s; }
+.ob-slide.active .bl-row:nth-child(4) .bl-v::after { animation-delay: 0.15s; }
+.ob-slide.active .bl-key kbd { animation: bl-key 5.5s infinite; }
+@keyframes bl-mask { 0%,16%{transform:scaleX(0)} 26%,72%{transform:scaleX(1)} 82%,100%{transform:scaleX(0)} }
+@keyframes bl-key  { 0%,12%{background:rgba(var(--surface-rgb),0.08);color:var(--text)} 17%{background:var(--pick);color:var(--panel);transform:scale(0.94)} 24%,70%{background:rgba(var(--surface-rgb),0.08);color:var(--text);transform:none} 76%{background:var(--pick);color:var(--panel);transform:scale(0.94)} 83%,100%{background:rgba(var(--surface-rgb),0.08);color:var(--text);transform:none} }
+
+/* ══════════════ 6 · Расписание ══════════════ */
+.s6 { display: flex; flex-direction: column; }
+.sc-head { display: flex; align-items: center; gap: 7px; padding: 10px 12px; font-size: 12px; font-weight: 600; background: var(--raised); border-bottom: 1px solid var(--line); }
+.sc-htitle { flex: 1; }
+.sc-now { padding: 11px 14px 9px; border-bottom: 1px solid var(--line); }
+.sc-name { font-size: 14px; font-weight: 600; color: var(--blue); }
+.sc-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.sc-left { color: var(--text); }
+.sc-next { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.sc-list { flex: 1; min-height: 0; overflow: hidden; padding: 4px 0; }
+.sc-row { display: flex; gap: 10px; padding: 5px 14px; font-size: 11px; color: var(--muted); }
+.sc-t { color: var(--faint); width: 36px; flex: 0 0 auto; }
+.sc-row.past { opacity: 0.45; }
+.sc-row.now { color: var(--text); font-weight: 600; border-left: 2px solid var(--blue); }
+.sc-row.now .sc-t { color: var(--blue); }
+.ob-slide.active .sc-row.now { animation: sc-now 3s infinite; }
+.ob-slide.active .sc-left    { animation: sc-pulse 3s infinite; }
+@keyframes sc-now { 0%,100%{background:rgba(116,185,255,0.10)} 50%{background:rgba(116,185,255,0.2)} }
+@keyframes sc-pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* ── Меньше движения ───────────────────────────────── */
+/* Циклы демонстраций выключаем целиком: макеты остаются в конечном,
+   уже показательном кадре (см. блок no-preference выше). Смену
+   карточек оставляем, но без проезда — коротким проявлением. */
+@media (prefers-reduced-motion: reduce) {
+  .ob-track { transition: none; }
+  /* Псевдоэлементы обязаны быть перечислены отдельно: `*` их не
+     выбирает, и без этой строки маска на карточке «Блюр данных»
+     продолжала анимироваться — то есть данные оставались открытыми,
+     ровно наоборот тому, о чём карточка. */
+  .mock, .ob-slide.active *,
+  .ob-slide.active *::before, .ob-slide.active *::after { animation: none !important; }
+  .ob-slide.active .ob-copy > * { animation: ob-fade 0.2s ease both !important; }
+  @keyframes ob-fade { from { opacity: 0 } to { opacity: 1 } }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .hn-pop { background: var(--panel); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* ── Узкий экран ───────────────────────────────────── */
+@media (max-width: 860px) {
+  .ob-slide { flex-direction: column; gap: 20px; padding: 20px 22px 26px; text-align: center; }
+  .ob-stage { width: 100%; }
+  .ob-how { justify-content: center; }
+  .ob-grid { grid-template-columns: 1fr; }
+  .ob-card { text-align: left; }
+}

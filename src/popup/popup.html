@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="../styles/fonts.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="pp-header">
+    <img id="pp-logo" src="/icons/icon48.png" alt="T">
+    <span id="pp-title">T-Helper</span>
+    <button id="pp-theme-toggle" type="button" title="Сменить тему" aria-label="Сменить тему">
+      <svg class="pp-icon-sun" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="5"/><g stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 1.9v2.2M12 19.9v2.2M4.05 4.05l1.56 1.56M18.39 18.39l1.56 1.56M1.9 12h2.2M19.9 12h2.2M4.05 19.95l1.56-1.56M18.39 5.61l1.56-1.56"/></g></svg>
+      <svg class="pp-icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14.77 2.79a.72.72 0 0 1 .93-.6 9.6 9.6 0 1 1-12.3 12.3.72.72 0 0 1 .84-.93 8.13 8.13 0 0 0 10.53-10.53 4.6 4.6 0 0 1 0-.24Z"/></svg>
+    </button>
+  </div>
+
+  <div class="pp-section-label">Модули</div>
+
+  <!-- Быстрые фразы -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">⚡ Быстрые фразы</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Вставка фраз через меню по бинду." aria-label="Описание"></button>
+        <button class="pp-gear" data-target="pp-cfg-phrases" title="Настройки"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg></button>
+        <label class="pp-switch">
+          <input type="checkbox" id="pp-phrases" checked>
+          <span class="pp-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="pp-cfg-wrap" id="pp-cfg-phrases-wrap">
+      <div class="pp-cfg-inner">
+        <div class="pp-cfg" id="pp-cfg-phrases">
+          <div class="pp-cfg-row">
+            <span>Горячая клавиша меню</span>
+            <button class="pp-hk-capture" id="pp-phrases-hk">Alt+A</button>
+          </div>
+          <div class="pp-cfg-note">Нажмите кнопку и нужную комбинацию клавиш. Остальные настройки — в панели (⚙).</div>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Расписание -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">📅 Расписание</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Переносимое меню с твоим расписанием." aria-label="Описание"></button>
+        <button class="pp-gear" data-target="pp-cfg-schedule" title="Настройки"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg></button>
+        <label class="pp-switch">
+          <input type="checkbox" id="pp-schedule" checked>
+          <span class="pp-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="pp-cfg-wrap" id="pp-cfg-schedule-wrap">
+      <div class="pp-cfg-inner">
+        <div class="pp-cfg" id="pp-cfg-schedule">
+          <div class="pp-cfg-row">
+            <span>Звук при смене режима</span>
+            <label class="pp-switch pp-switch-sm">
+              <input type="checkbox" id="pp-schedule-sound" checked>
+              <span class="pp-slider"></span>
+            </label>
+          </div>
+          <div class="pp-cfg-row">
+            <span>Прозрачность</span>
+            <div class="pp-cfg-right">
+              <input type="range" id="pp-schedule-opacity" min="20" max="100" value="75">
+              <span id="pp-schedule-opacity-val">75%</span>
+            </div>
+          </div>
+          <button class="pp-open-schedule-btn" id="pp-open-schedule">📅 Открыть расписание</button>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Подсказки -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">💡 Подсказки</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Подсказки над полем ввода. При нажатии кнопки Tab - совершит быструю вставку подходящей фразы. Кнопки стрелочек - переключение между вариантами." aria-label="Описание"></button>
+        <button class="pp-gear" data-target="pp-cfg-hints" title="Настройки"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg></button>
+        <label class="pp-switch">
+          <input type="checkbox" id="pp-hints" checked>
+          <span class="pp-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="pp-cfg-wrap" id="pp-cfg-hints-wrap">
+      <div class="pp-cfg-inner">
+        <div class="pp-cfg" id="pp-cfg-hints">
+          <div class="pp-cfg-row">
+            <span>Прозрачность</span>
+            <div class="pp-cfg-right">
+              <input type="range" id="pp-hints-opacity" min="20" max="100" value="85">
+              <span id="pp-hints-opacity-val">85%</span>
+            </div>
+          </div>
+          <div class="pp-cfg-row">
+            <span>Вариантов</span>
+            <div class="pp-cfg-right">
+              <input type="range" id="pp-hints-count" min="1" max="5" value="3">
+              <span id="pp-hints-count-val">3</span>
+            </div>
+          </div>
+          <div class="pp-cfg-row">
+            <span>Показывать</span>
+            <div class="pp-seg" id="pp-hints-scope">
+              <button class="pp-seg-btn pp-seg-active" data-scope="twork">Творк</button>
+              <button class="pp-seg-btn" data-scope="everywhere">Везде</button>
+            </div>
+          </div>
+          <div class="pp-cfg-row">
+            <span>Размер текста</span>
+            <div class="pp-seg" id="pp-hints-size">
+              <button class="pp-seg-btn" data-size="S">S</button>
+              <button class="pp-seg-btn pp-seg-active" data-size="M">M</button>
+              <button class="pp-seg-btn" data-size="L">L</button>
+            </div>
+          </div>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Таймер для ВЗ -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">⏱️ Таймер для ВЗ</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Таймер ожидания клиента на видеозвонке (работает только на сайте homeagents)" aria-label="Описание"></button>
+        <button class="pp-gear" data-target="pp-cfg-timer" title="Настройки"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg></button>
+        <label class="pp-switch">
+          <input type="checkbox" id="pp-timer" checked>
+          <span class="pp-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="pp-cfg-wrap" id="pp-cfg-timer-wrap">
+      <div class="pp-cfg-inner">
+        <div class="pp-cfg" id="pp-cfg-timer">
+          <div class="pp-cfg-row">
+            <span>Звук после 1:30</span>
+            <label class="pp-switch pp-switch-sm">
+              <input type="checkbox" id="pp-timer-sound" checked>
+              <span class="pp-slider"></span>
+            </label>
+          </div>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Блюр данных -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">🙈 Блюр данных</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Скрытие чувствительных данных: ФИО, телефона, айди клиента и т. п." aria-label="Описание"></button>
+        <button class="pp-gear" data-target="pp-cfg-blur" title="Настройки"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg></button>
+        <label class="pp-switch">
+          <input type="checkbox" id="pp-blur" checked>
+          <span class="pp-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="pp-cfg-wrap" id="pp-cfg-blur-wrap">
+      <div class="pp-cfg-inner">
+        <div class="pp-cfg" id="pp-cfg-blur">
+          <div class="pp-cfg-row">
+            <span>Горячая клавиша</span>
+            <button class="pp-hk-capture" id="pp-blur-hk">Alt+B</button>
+          </div>
+          <div class="pp-cfg-note">Работает во всех вкладках сразу, в том числе во время набора сообщения.</div>
+    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Заметки -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">🗒️ Заметки</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Язычки у края экрана. Первая заметка временная: очищается при закрытии обращения или через час без правок." aria-label="Описание"></button>
+        <button class="pp-gear" data-target="pp-cfg-notes" title="Настройки"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L9.05 4.889c-.02.12-.115.26-.297.348a7.493 7.493 0 00-.986.57c-.166.115-.334.126-.45.083L6.3 5.508a1.875 1.875 0 00-2.282.819l-.922 1.597a1.875 1.875 0 00.432 2.385l.84.692c.095.078.17.229.154.43a7.598 7.598 0 000 1.139c.015.2-.059.352-.153.43l-.841.692a1.875 1.875 0 00-.432 2.385l.922 1.597a1.875 1.875 0 002.282.818l1.019-.382c.115-.043.283-.031.45.082.312.214.641.405.985.57.182.088.277.228.297.35l.178 1.071c.151.904.933 1.567 1.85 1.567h1.844c.916 0 1.699-.663 1.85-1.567l.178-1.072c.02-.12.114-.26.297-.349.344-.165.673-.356.985-.57.167-.114.335-.125.45-.082l1.02.382a1.875 1.875 0 002.28-.819l.923-1.597a1.875 1.875 0 00-.432-2.385l-.84-.692c-.095-.078-.17-.229-.154-.43a7.614 7.614 0 000-1.139c-.016-.2.059-.352.153-.43l.84-.692c.708-.582.891-1.59.433-2.385l-.922-1.597a1.875 1.875 0 00-2.282-.818l-1.02.382c-.114.043-.282.031-.449-.083a7.49 7.49 0 00-.985-.57c-.183-.087-.277-.227-.297-.348l-.179-1.072a1.875 1.875 0 00-1.85-1.567h-1.843zM12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd"/></svg></button>
+        <label class="pp-switch">
+          <input type="checkbox" id="pp-notes" checked>
+          <span class="pp-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="pp-cfg-wrap" id="pp-cfg-notes-wrap">
+      <div class="pp-cfg-inner">
+        <div class="pp-cfg" id="pp-cfg-notes">
+          <div class="pp-cfg-row">
+            <span>Оформление</span>
+            <div class="pp-seg" id="pp-notes-style">
+              <button class="pp-seg-btn pp-seg-active" data-nstyle="glass">Стекло</button>
+              <button class="pp-seg-btn" data-nstyle="solid">Обычное</button>
+            </div>
+          </div>
+          <div class="pp-cfg-row">
+            <span>Сторона</span>
+            <div class="pp-seg" id="pp-notes-side">
+              <button class="pp-seg-btn pp-seg-active" data-nside="right">Справа</button>
+              <button class="pp-seg-btn" data-nside="left">Слева</button>
+            </div>
+          </div>
+          <div class="pp-cfg-row">
+            <span>Сохранить заметки</span>
+            <button class="pp-cfg-btn" id="pp-export-notes" type="button">Выгрузить</button>
+          </div>
+          <div class="pp-cfg-note">Не больше 20 заметок. Цвет и значок язычка выбираются в самой заметке. Заметки общие для всех вкладок.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Чек-лист -->
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">✅ Чек-лист</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Плавающий чек-лист с вкладками." aria-label="Описание"></button>
+        <button class="pp-open-btn" id="pp-open-checklist">Открыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Конфигурация -->
+  <div class="pp-section-label">Конфигурация</div>
+  <div class="pp-module">
+    <div class="pp-module-row">
+      <div class="pp-module-info">
+        <div class="pp-module-name">💾 Резервная копия</div>
+      </div>
+      <div class="pp-module-controls">
+        <button class="pp-help" data-tip="Экспорт и импорт. Настройки и фразы сохраняются одним файлом, заметки — отдельным." aria-label="Описание"></button>
+      </div>
+    </div>
+    <div class="pp-config-btns">
+      <button class="pp-config-btn" id="pp-export-config"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="13" height="13" style="display:block;flex-shrink:0"><path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-15a3 3 0 00-3 3V18a3 3 0 003 3h15zM1.5 10.146V6a3 3 0 013-3h5.379a2.25 2.25 0 011.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 013 3v1.146A4.483 4.483 0 0019.5 9h-15a4.483 4.483 0 00-3 1.146z"/></svg> Сохранить</button>
+      <button class="pp-config-btn" id="pp-import-config"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="13" height="13" style="display:block;flex-shrink:0"><path fill-rule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zM12.75 12a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V18a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V12z" clip-rule="evenodd"/><path d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z"/></svg> Загрузить</button>
+      <input type="file" id="pp-import-file" accept=".json" style="display:none">
+    </div>
+  </div>
+
+  <div id="pp-footer">@a.s.klenin</div>
+
+  <div id="pp-toast" hidden>
+    <span id="pp-toast-icon"></span>
+    <span id="pp-toast-msg"></span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
